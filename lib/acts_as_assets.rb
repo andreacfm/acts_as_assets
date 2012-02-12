@@ -1,4 +1,2 @@
 require "acts_as_assets/engine"
-
-module ActsAsAssets
-end
+require "acts_as_assets/base"

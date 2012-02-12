@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     acts_as_assets (0.0.1)
+      paperclip
       rails (~> 3.2.1)
 
 GEM
@@ -36,14 +37,12 @@ GEM
       multi_json (~> 1.0)
     arel (3.0.0)
     builder (3.0.0)
+    cocaine (0.2.1)
     diff-lcs (1.1.3)
     erubis (2.7.0)
     hike (1.2.1)
     i18n (0.6.0)
     journey (1.0.1)
-    jquery-rails (2.0.0)
-      railties (< 5.0, >= 3.2.0.beta)
-      thor (~> 0.14)
     json (1.6.5)
     mail (2.4.1)
       i18n (>= 0.4.0)
@@ -51,6 +50,11 @@ GEM
       treetop (~> 1.4.8)
     mime-types (1.17.2)
     multi_json (1.0.4)
+    paperclip (2.5.2)
+      activerecord (>= 2.3.0)
+      activesupport (>= 2.3.2)
+      cocaine (>= 0.0.2)
+      mime-types
     polyglot (0.3.3)
     rack (1.4.1)
     rack-cache (1.1)
@@ -90,6 +94,7 @@ GEM
       activesupport (>= 3.0)
       railties (>= 3.0)
       rspec (~> 2.8.0)
+    shoulda-matchers (1.0.0)
     sprockets (2.1.2)
       hike (~> 1.2)
       rack (~> 1.0)
@@ -107,6 +112,7 @@ PLATFORMS
 
 DEPENDENCIES
   acts_as_assets!
-  jquery-rails
+  paperclip
   rspec-rails
+  shoulda-matchers
   sqlite3
