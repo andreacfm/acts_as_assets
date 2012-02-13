@@ -1,4 +1,6 @@
 class ActsAsAssets::AssetsController < ApplicationController
+  include ActsAsAssets::AssetsHelper
+  helper_method :destroy_path
   before_filter "assign_root_model"
   before_filter "assign_target", :only => [:index,:destroy]
 
@@ -9,7 +11,7 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def create
     name = root_model_name
-    klazz = ([name.pluralize.camelize] << params[:type]).join('::')
+    klazz = ([name.pluralize.camelize] << camelize_type.flatten).join('::')
     @asset = klazz.constantize.create!(:asset => params[:file],
                               "#{name}".to_sym => instance_variable_get("@#{name}".to_sym))
 
@@ -25,7 +27,7 @@ class ActsAsAssets::AssetsController < ApplicationController
   def destroy
 
     begin
-      @asset = instance_variable_get("@#{root_model_name}").send(:assets).find_by_id(params[:id])
+      @asset = instance_variable_get("@#{root_model_name}").send(:assets).find_by_id(params[:asset_id])
       @asset.destroy
     rescue Exception => e
       error = e.message
@@ -46,7 +48,7 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def load_assets
     name = root_model_name
-    klazz = ([name.pluralize.camelize] << params[:type]).join('::')
+    klazz = ([name.pluralize.camelize] << camelize_type.flatten).join('::')
     @assets = klazz.constantize.send(:where,"#{name}_id".to_sym => params["#{name}_id".to_sym])
   end
 
@@ -63,12 +65,9 @@ class ActsAsAssets::AssetsController < ApplicationController
     @target = params[:target]
   end
 
-  def destroy_path doc
-    name = root_model_name
-    method = "#{name.pluralize}_assets_destroy_path"
-    send(method.to_sym, instance_variable_get("@#{name}"), :asset_id => doc.id, :target => @target)
+  # takes a type params string like "my/asset/type_of_documento" and convert into [My,Asset,TypeOfDocument]
+  def camelize_type
+    params[:type].split('/').collect{|i|i.camelize}
   end
-  helper_method :destroy_path
-
 
 end

@@ -27,7 +27,7 @@ describe Books::AssetsController do
         @book = book
         @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
         @docs << @asset
-        get :index, :book_id => @book.id, :type => ["Assets","TestDoc"]
+        get :index, :book_id => @book.id, :type => "Assets/TestDoc"
       end
       it "should return /books/id/assets/asset_id" do
         subject.send(:destroy_path,@asset).should eq "/books/#{@book.id}/assets/#{@asset.id}"
@@ -42,7 +42,7 @@ describe Books::AssetsController do
 
       before do
         @book = book
-        get :index, :book_id => @book.id, :type => ["Assets","TestDoc"]
+        get :index, :book_id => @book.id, :type => "Assets/TestDoc"
       end
 
       it "should assign @book" do
@@ -59,7 +59,7 @@ describe Books::AssetsController do
       @book = book
       @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
       @docs << @asset
-      get :index, :book_id => book.id, :type => ["Assets","TestDoc"], :target => target, :format => :js
+      get :index, :book_id => book.id, :type => "Assets/TestDoc", :target => target, :format => :js
     end
 
     it "should assign variables" do
@@ -82,7 +82,7 @@ describe Books::AssetsController do
 
     before do
       @book = book
-      post :create, :book_id => @book.id, :type => ["Assets","TestDoc"], :file => jpg_test, :format => "js"
+      post :create, :book_id => @book.id, :type => "Assets/TestDoc", :file => jpg_test, :format => "js"
       @docs << assigns(:asset)
     end
 
@@ -107,7 +107,7 @@ describe Books::AssetsController do
     before :each do
       @book = book
       @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-      delete :destroy, :book_id => @book.id, :id => @asset.id, :format => "js", :target => target
+      delete :destroy, :book_id => @book.id, :asset_id => @asset.id, :format => "js", :target => target
     end
 
     it "should assign variables" do
