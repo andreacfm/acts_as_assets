@@ -1,6 +1,6 @@
 module Books
   module Assets
-    class Image < Books::Asset
+    class TestDoc < Books::Asset
     end
   end
 end

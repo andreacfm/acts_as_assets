@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Andrea Campolonghi"]
   s.email       = ["acampolonghi@gmail.com"]
   s.homepage    = ""
-  s.summary     = ""
+  s.summary     = "Manage multiple assets related to a specific model"
   s.description = ""
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["Rakefile", "README.md"]

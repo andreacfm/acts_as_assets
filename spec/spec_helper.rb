@@ -32,6 +32,16 @@ RSpec.configure do |config|
       t.integer :counter, :default => 0, :null => false
       t.integer :book_id
     end
+    Rails.application.routes.draw do
+      namespace :books do
+        scope ":book_id/assets" do
+          get '*type' => 'assets#index', :as => 'assets'
+          post ':type' => 'assets#create', :as => 'assets_create'
+          delete ':asset_id' => 'assets#destroy', :as => 'assets_destroy'
+        end
+      end
+    end
+
   end
 
   config.before(:each) do
