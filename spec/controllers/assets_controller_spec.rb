@@ -30,7 +30,7 @@ describe Books::AssetsController do
         get :index, :book_id => @book.id, :type => "Assets/TestDoc"
       end
       it "should return /books/id/assets/asset_id" do
-        subject.send(:destroy_path,@asset).should eq "/books/#{@book.id}/assets/#{@asset.id}"
+        subject.send(:destroy_path,@asset, target).should eq "/books/#{@book.id}/assets/#{@asset.id}?target=#{target}"
       end
     end
 
