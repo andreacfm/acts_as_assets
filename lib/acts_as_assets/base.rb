@@ -31,6 +31,10 @@ module ActsAsAssets
 
   module InstanceMethods
 
+    def acting_as_assets?
+      true
+    end
+
     private
 
     def touch_counter
