@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    acts_as_assets (0.0.1)
+    acts_as_assets (0.0.2)
       paperclip
       rails (~> 3.2.1)
 
