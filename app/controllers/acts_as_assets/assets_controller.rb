@@ -15,14 +15,14 @@ class ActsAsAssets::AssetsController < ApplicationController
   def create
     name = root_model_name
     klazz = ([name.pluralize.camelize] << camelize_type.flatten).join('::')
-    @asset = klazz.constantize.create!(:asset => params[:file],
+    @asset = klazz.constantize.create(:asset => params[:file],
                               "#{name}".to_sym => instance_variable_get("@#{name}".to_sym))
 
     respond_to do |format|
       if @asset.valid?
         format.js
       else
-        format.js { render :json =>{:errors => @asset.errors}, :status => 406 }
+        format.js { render :json =>{:success => false, :errors => @asset.errors}}
       end
     end
   end
@@ -40,7 +40,7 @@ class ActsAsAssets::AssetsController < ApplicationController
       if error.nil?
         format.js
       else
-        format.js { render :json => {:errors => error}, :status => 406 }
+        format.js { render :json => {:success => false, :errors => error}}
       end
     end
 
