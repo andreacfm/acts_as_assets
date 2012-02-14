@@ -6,7 +6,10 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def index
     load_assets
-    render 'acts_as_assets/assets/index', :layout => false
+    respond_to do |format|
+      format.html{render :layout => false}
+      format.json{render :json => @assets}
+    end
   end
 
   def create
@@ -17,9 +20,9 @@ class ActsAsAssets::AssetsController < ApplicationController
 
     respond_to do |format|
       if @asset.valid?
-        format.js { render :json => {:success => true} }
+        format.js
       else
-        format.js { render :json =>{:success => false, :errors => @asset.errors} }
+        format.js { render :json =>{:errors => @asset.errors}, :status => 406 }
       end
     end
   end
@@ -35,9 +38,9 @@ class ActsAsAssets::AssetsController < ApplicationController
 
     respond_to do |format|
       if error.nil?
-        format.js { render 'acts_as_assets/assets/destroy'}
+        format.js
       else
-        format.js { render :json => {:success => false, :errors => error} }
+        format.js { render :json => {:errors => error}, :status => 406 }
       end
     end
 
