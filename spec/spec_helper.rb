@@ -44,6 +44,14 @@ RSpec.configure do |config|
 
   end
 
+  #destroy created assets
+  config.before :all do
+    @dtbd = []
+  end
+  config.after :all do
+    @dtbd.each {|d| d.destroy unless d.nil? }
+  end
+
   config.before(:each) do
     Books::Asset.delete_all
     Book.delete_all

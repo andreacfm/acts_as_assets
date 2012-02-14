@@ -4,14 +4,6 @@ describe "ActsAsAssets" do
 
   let(:book) { Book.create!(:title => "my new book") }
 
-  before :all do
-    @docs = []
-  end
-
-  after :all do
-    @docs.each { |d| d.destroy }
-  end
-
   describe "model that acts as assets" do
     subject { Books::Asset.new }
     it { should belong_to(:book) }
@@ -88,9 +80,9 @@ describe "ActsAsAssets" do
 
         it "should increase counter by one if a document of the same type are created" do
           dc = Books::Assets::TestDoc.create!
-          @docs << dc
+          @dtbd << dc
           dc2 = Books::Assets::TestDoc.create!
-          @docs << dc2
+          @dtbd << dc2
           Books::Asset.find(dc.id).counter.should eq 1
           Books::Asset.find(dc2.id).counter.should eq 2
         end
@@ -106,14 +98,14 @@ describe "ActsAsAssets" do
         it "should interpolate the correct path for a subclass instance" do
           b = book
           doc = Books::Assets::TestDoc.create! :asset => jpg_test, :book => b
-          @docs << doc
+          @dtbd << doc
           doc.asset.path.should eq "public/system/books/#{b.id}/assets/test_doc.jpg"
         end
 
         it "should interpolate the correct url for a subclass instance" do
           b = book
           doc = Books::Assets::TestDoc.create! :asset => jpg_test, :book => b
-          @docs << doc
+          @dtbd << doc
           doc.asset.url.should  match /\/books\/#{b.id}\/assets\/#{doc.id}/
         end
 

@@ -1,3 +1,6 @@
+require "acts_as_assets/paperclip/interpolations"
+require "acts_as_assets/unique_asset"
+
 module ActsAsAssets
 
   module Base

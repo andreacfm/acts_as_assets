@@ -1,0 +1,2 @@
+acts_as_assets:
+    unique_asset_error: 'Un solo documento di questo tipo può essere caricato. Eliminare il file attuale per sostituirlo.'

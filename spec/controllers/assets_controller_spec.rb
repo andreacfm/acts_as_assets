@@ -5,15 +5,6 @@ describe Books::AssetsController do
   let(:book) { Book.create!(:title => "my new book") }
   let(:target){'target_div'}
 
-  before :all do
-    @docs = []
-  end
-
-  after :all do
-    @docs.each { |d| d.destroy }
-  end
-
-
   context "given a Books::AssetsController controller " do
 
     describe "root_model_name" do
@@ -26,7 +17,7 @@ describe Books::AssetsController do
       before do
         @book = book
         @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @docs << @asset
+        @dtbd << @asset
         get :index, :book_id => @book.id, :type => "Assets/TestDoc"
       end
       it "should return /books/id/assets/asset_id" do
@@ -60,7 +51,7 @@ describe Books::AssetsController do
       before :each do
         @book = book
         @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @docs << @asset
+        @dtbd << @asset
         get :index, :book_id => book.id, :type => "Assets/TestDoc", :target => target, :format => :html
       end
 
@@ -85,7 +76,7 @@ describe Books::AssetsController do
       before :each do
         @book = book
         @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @docs << @asset
+        @dtbd << @asset
         get :index, :book_id => book.id, :type => "Assets/TestDoc", :target => target, :format => :json
       end
 
@@ -104,7 +95,7 @@ describe Books::AssetsController do
     before do
       @book = book
       post :create, :book_id => @book.id, :type => "Assets/TestDoc", :file => jpg_test, :format => "js"
-      @docs << assigns(:asset)
+      @dtbd << assigns(:asset)
     end
 
     it "should assign variables" do
@@ -129,6 +120,7 @@ describe Books::AssetsController do
     before :each do
       @book = book
       @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
+      @dtbd << @asset
       delete :destroy, :book_id => @book.id, :asset_id => @asset.id, :format => "js", :target => target
     end
 
