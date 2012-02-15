@@ -20,7 +20,7 @@ module ActsAsAssets
 
       belongs_to root_model
       has_attached_file :asset,
-                        :url => "/#{root_model.to_s.pluralize}/:acts_as_assets_root_id/assets/:acts_as_assets_asset_id",
+                        :url => "/#{root_model.to_s.pluralize}/:acts_as_assets_root_id/assets/:acts_as_assets_asset_id/download",
                         :path => ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
       before_create :touch_counter
 

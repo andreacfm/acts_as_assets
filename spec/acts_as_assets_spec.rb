@@ -106,7 +106,7 @@ describe "ActsAsAssets" do
           b = book
           doc = Books::Assets::TestDoc.create! :asset => jpg_test, :book => b
           @dtbd << doc
-          doc.asset.url.should  match /\/books\/#{b.id}\/assets\/#{doc.id}/
+          doc.asset.url.should  match /\/books\/#{b.id}\/assets\/#{doc.id}\/download/
         end
 
       end
