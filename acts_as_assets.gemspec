@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Andrea Campolonghi"]
   s.email       = ["acampolonghi@gmail.com"]
   s.homepage    = ""
-  s.summary     = "Manage multiple assets related to a specific model"
-  s.description = ""
+  s.summary     = "Assets management"
+  s.description = "Manage multiple assets related to a specific model"
 
   s.files = Dir["{app,config,db,lib}/**/*"] + ["Rakefile", "README.md"]
   s.test_files = Dir["spec/**/*"]
