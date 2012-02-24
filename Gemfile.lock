@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     acts_as_assets (0.0.5)
-      ci_reporter
       paperclip
       rails (~> 3.2.1)
 
@@ -115,6 +114,7 @@ PLATFORMS
 
 DEPENDENCIES
   acts_as_assets!
+  ci_reporter
   paperclip
   rspec-rails
   shoulda-matchers

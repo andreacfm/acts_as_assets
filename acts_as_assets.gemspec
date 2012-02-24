@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency "rails", "~> 3.2.1"
   s.add_dependency "paperclip"
 
-  s.add_dependency "ci_reporter"
+  s.add_development_dependency "ci_reporter"
   s.add_development_dependency "sqlite3"
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "paperclip"
