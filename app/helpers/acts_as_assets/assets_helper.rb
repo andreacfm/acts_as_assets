@@ -2,7 +2,7 @@ module ActsAsAssets::AssetsHelper
 
   def destroy_path doc, target
     name = ActiveSupport::Inflector.underscore(doc.class.to_s.split('::').first.singularize)
-    method = "#{name.pluralize}_assets_destroy_path"
+    method = "#{name}_destroy_asset_path"
     send(method.to_sym, instance_variable_get("@#{name}"), :asset_id => doc.id, :target => target)
   end
 
