@@ -18,6 +18,18 @@ describe "ActsAsAssets" do
 
     context "given a class of type Books::Assets::TestDoc" do
 
+      describe "definitions" do
+        it "should not include styles" do
+          subject.class.attachment_definitions[:asset].should_not include(:styles)
+        end
+        it "should include correct url" do
+          subject.class.attachment_definitions[:asset][:url].should == "/books/:acts_as_assets_root_id/assets/:acts_as_assets_asset_id/download"
+        end
+        it "should include correct path" do
+          subject.class.attachment_definitions[:asset][:path].should == ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
+        end
+      end
+
       describe "root_model" do
         it "should return :book" do
           subject.class.root_model.should eq :book
@@ -106,9 +118,28 @@ describe "ActsAsAssets" do
           b = book
           doc = Books::Assets::TestDoc.create! :asset => jpg_test, :book => b
           @dtbd << doc
-          doc.asset.url.should  match /\/books\/#{b.id}\/assets\/#{doc.id}\/download/
+          doc.asset.url.should match /\/books\/#{b.id}\/assets\/#{doc.id}\/download/
         end
 
+      end
+
+    end
+
+  end
+
+  context "using paperclip styles" do
+
+    context "given a class of type Books::Assets::TestImage that add :thumb and :medium style" do
+      subject { Books::Assets::TestImage.new }
+
+      it "should add styles to attachment definitions" do
+        definitions = subject.class.attachment_definitions[:asset][:styles]
+        definitions.should include(:thumb)
+        definitions.should include(:medium)
+      end
+
+      it "should include :style interpolation in the path definition" do
+        subject.class.attachment_definitions[:asset][:path].should == ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension"
       end
 
     end
