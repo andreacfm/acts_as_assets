@@ -142,6 +142,15 @@ describe "ActsAsAssets" do
         subject.class.attachment_definitions[:asset][:path].should == ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension"
       end
 
+      it "should create the thumb/medium and original image in the correct path" do
+        b = book
+        doc = Books::Assets::TestImage.create! :asset => jpg_test, :book => b
+        @dtbd << doc
+        doc.asset.path(:thumb).should eq "public/system/books/#{b.id}/assets/thumb/test_image.jpg"
+        doc.asset.path(:original).should eq "public/system/books/#{b.id}/assets/original/test_image.jpg"
+        doc.asset.path(:medium).should eq "public/system/books/#{b.id}/assets/medium/test_image.jpg"
+      end
+
     end
 
   end
