@@ -25,14 +25,15 @@ module Books
 end
 
 module Books
-  class Image < Books::Asset
+  class Image < ActiveRecord::Base
+    self.table_name = "books_assets"
+    acts_as_assets :styles => {:thumb => "64x64", :medium => "128x128", :original => "800x600<"}
   end
 end
 
 module Books
   module Assets
     class TestImage < Books::Image
-      acts_as_assets :styles => {:thumb => "64x64", :medium => "128x128"}
     end
   end
 end

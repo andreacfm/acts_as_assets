@@ -14,4 +14,10 @@ describe Books::AssetsController do
   it {should route(:delete,'books/1/assets/20.js').to(
                  :controller => "books/assets", :action => :destroy, :book_id => 1, :format => 'js', :asset_id => 20)}
 
+  it {should route(:get,'books/1/assets/get/thumb/20').to(
+                 :controller => "books/assets", :action => :get, :book_id => 1, :style => "thumb", :asset_id => 20)}
+
+  it {should route(:get,'books/1/assets/get/20').to(
+                 :controller => "books/assets", :action => :get, :book_id => 1, :asset_id => 20)}
+
 end

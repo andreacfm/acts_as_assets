@@ -23,7 +23,7 @@ describe "ActsAsAssets" do
           subject.class.attachment_definitions[:asset].should_not include(:styles)
         end
         it "should include correct url" do
-          subject.class.attachment_definitions[:asset][:url].should == "/books/:acts_as_assets_root_id/assets/:acts_as_assets_asset_id/download"
+          subject.class.attachment_definitions[:asset][:url].should == "/books/:acts_as_assets_root_id/assets/:acts_as_assets_asset_id/get"
         end
         it "should include correct path" do
           subject.class.attachment_definitions[:asset][:path].should == ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
@@ -118,7 +118,7 @@ describe "ActsAsAssets" do
           b = book
           doc = Books::Assets::TestDoc.create! :asset => jpg_test, :book => b
           @dtbd << doc
-          doc.asset.url.should match /\/books\/#{b.id}\/assets\/#{doc.id}\/download/
+          doc.asset.url.should match /\/books\/#{b.id}\/assets\/#{doc.id}\/get/
         end
 
       end
@@ -149,6 +149,15 @@ describe "ActsAsAssets" do
         doc.asset.path(:thumb).should eq "public/system/books/#{b.id}/assets/thumb/test_image.jpg"
         doc.asset.path(:original).should eq "public/system/books/#{b.id}/assets/original/test_image.jpg"
         doc.asset.path(:medium).should eq "public/system/books/#{b.id}/assets/medium/test_image.jpg"
+      end
+
+      it "should have style param in the url" do
+        b = book
+        doc = Books::Assets::TestImage.create! :asset => jpg_test, :book => b
+        @dtbd << doc
+        doc.asset.url(:thumb).should match  /\/books\/#{b.id}\/assets\/#{doc.id}\/thumb\/get/
+        doc.asset.url(:medium).should match  /\/books\/#{b.id}\/assets\/#{doc.id}\/medium\/get/
+        doc.asset.url(:original).should match  /\/books\/#{b.id}\/assets\/#{doc.id}\/original\/get/
       end
 
     end

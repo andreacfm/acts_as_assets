@@ -46,6 +46,16 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   end
 
+  def get
+    begin
+      @asset = instance_variable_get("@#{root_model_name}").send(:assets).find(params[:asset_id])
+    rescue ActiveRecord::RecordNotFound
+      respond_with_404  and return
+    end
+    @path = params[:style].nil? ? @asset.asset.path : @asset.asset.path(params[:style])
+    send_file(@path)
+  end
+
 
   private
 
@@ -71,6 +81,12 @@ class ActsAsAssets::AssetsController < ApplicationController
   # takes a type params string like "my/asset/type_of_documento" and convert into [My,Asset,TypeOfDocument]
   def camelize_type
     params[:type].split('/').collect{|i|i.camelize}
+  end
+
+  private
+
+  def respond_with_404
+    render :file => "#{Rails.root}/public/404.html", :status => :not_found
   end
 
 end

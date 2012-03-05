@@ -1,4 +1,6 @@
+# encoding: utf-8
 require "spec_helper"
+require "base64"
 
 describe Books::AssetsController do
   render_views
@@ -140,6 +142,62 @@ describe Books::AssetsController do
 
     it "should correctly delete the file" do
       File.exist?(File.expand_path(@asset.asset.path)).should be_false
+    end
+
+  end
+
+  describe "get" do
+
+    describe "sending existing file without style" do
+      before  do
+        @book = book
+        @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
+        @dtbd << @asset
+        get :get, :book_id => @book.id, :asset_id => @asset.id
+      end
+
+      it "should stream the asset" do
+        should respond_with(:success)
+        should respond_with_content_type("image/jpeg")
+        response.headers.to_s.should match /#{assigns(:asset).asset.to_file.original_filename}/
+      end
+
+    end
+
+    describe "sending existing file with a required style" do
+      before  do
+        @book = book
+        @asset = Books::Assets::TestImage.create! :asset => jpg_test, :book => @book
+        @dtbd << @asset
+        get :get, :book_id => @book.id, :asset_id => @asset.id, :style => "thumb"
+      end
+
+      it "should assign path" do
+        should assign_to(:path)
+        assigns(:path).should match /thumb/
+      end
+
+      it "should stream the asset" do
+        should respond_with(:success)
+        should respond_with_content_type("image/jpeg")
+        open("spec/temp/test.jpg", "wb") { |file|
+          file.write(response.body)
+        }
+        Paperclip::Geometry.from_file(File.expand_path("spec/temp/test.jpg")).to_s.should match /64/
+      end
+
+    end
+
+    describe "when requiring a file that does not exixts" do
+      before  do
+        @book = book
+        get :get, :book_id => @book.id, :asset_id => 123456789
+      end
+
+      it "should return 404 and attempt to render custom rails 404.html static file" do
+        should respond_with(404)
+      end
+
     end
 
   end

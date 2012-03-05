@@ -21,7 +21,7 @@ module ActsAsAssets
 
       options = args.extract_options!
       paperclip_config = {
-          :url => "/#{root_model.to_s.pluralize}/:acts_as_assets_root_id/assets/:acts_as_assets_asset_id/download",
+          :url => options.include?(:styles) ? "/#{root_model.to_s.pluralize}/:acts_as_assets_root_id/assets/:acts_as_assets_asset_id/:style/get" : "/#{root_model.to_s.pluralize}/:acts_as_assets_root_id/assets/:acts_as_assets_asset_id/get",
           :path => options.include?(:styles) ? ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension" : ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
       }
       has_attached_file :asset, paperclip_config.merge(options)
