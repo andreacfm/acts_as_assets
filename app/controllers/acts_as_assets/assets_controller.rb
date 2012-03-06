@@ -16,7 +16,8 @@ class ActsAsAssets::AssetsController < ApplicationController
     name = root_model_name
     klazz = ([name.pluralize.camelize] << camelize_type.flatten).join('::')
     @asset = klazz.constantize.create(:asset => params[:file],
-                              "#{name}".to_sym => instance_variable_get("@#{name}".to_sym))
+                                      :asset_content_type => MIME::Types.type_for(params[:file].original_filename)[0].to_s,
+                                      "#{name}".to_sym => instance_variable_get("@#{name}".to_sym))
 
     respond_to do |format|
       if @asset.valid?

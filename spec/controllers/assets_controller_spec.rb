@@ -105,6 +105,10 @@ describe Books::AssetsController do
       should assign_to(:book)
     end
 
+    it "should save the correct content_type" do
+      assigns(:asset).asset.content_type.should == "image/jpeg"
+    end
+
     it "should be success returning the correct json formatted text and the correct content type" do
       ActiveSupport::JSON.decode(response.body)["success"].should be_true
       should respond_with_content_type(:js)
