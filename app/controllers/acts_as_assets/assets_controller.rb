@@ -54,8 +54,7 @@ class ActsAsAssets::AssetsController < ApplicationController
       respond_with_404  and return
     end
     @path = params[:style].nil? ? @asset.asset.path : @asset.asset.path(params[:style])
-    content_type = MIME::Types.type_for(@path)[0].to_s
-    send_file(@path, {:filename => @asset.asset.to_file.original_filename, :type => content_type, :disposition => 'inline'})
+    send_file(@path, {:filename => @asset.asset.to_file.original_filename, :content_type => @asset.asset_content_type, :disposition => 'inline'})
   end
 
 
@@ -69,6 +68,7 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def assign_root_model
     name = root_model_name
+    p ">>>>>>>>>>>>>>>>>>>>>>>>>#{name}"
     instance_variable_set "@#{name}", name.camelize.constantize.send(:find, params["#{name}_id".to_sym])
   end
 
