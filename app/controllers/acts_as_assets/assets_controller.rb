@@ -68,7 +68,6 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def assign_root_model
     name = root_model_name
-    p ">>>>>>>>>>>>>>>>>>>>>>>>>#{name}"
     instance_variable_set "@#{name}", name.camelize.constantize.send(:find, params["#{name}_id".to_sym])
   end
 
