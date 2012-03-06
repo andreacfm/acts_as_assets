@@ -34,7 +34,7 @@ RSpec.configure do |config|
     end
     Rails.application.routes.draw do
       scope "books/:book_id/assets/" do
-        get 'get/(:style)/:asset_id/:filename.:extension' => 'books/assets#get', :as => 'book_get_asset'
+        get 'get/:asset_id/(:style)/:filename.:extension' => 'books/assets#get', :as => 'book_get_asset'
         get '*type' => 'books/assets#index', :as => 'book_assets'
         post '*type' => 'books/assets#create', :as => 'book_create_asset'
         delete ':asset_id' => 'books/assets#destroy', :as => 'book_destroy_asset'
