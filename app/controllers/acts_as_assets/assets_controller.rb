@@ -53,7 +53,8 @@ class ActsAsAssets::AssetsController < ApplicationController
       respond_with_404  and return
     end
     @path = params[:style].nil? ? @asset.asset.path : @asset.asset.path(params[:style])
-    send_file(@path)
+    content_type = MIME::Types.type_for(@path)[0].to_s
+    send_file(@path, {:filename => @asset.asset.to_file.original_filename, :type => content_type, :disposition => 'inline'})
   end
 
 

@@ -23,7 +23,7 @@ describe "ActsAsAssets" do
           subject.class.attachment_definitions[:asset].should_not include(:styles)
         end
         it "should include correct url" do
-          subject.class.attachment_definitions[:asset][:url].should == "/books/:acts_as_assets_root_id/assets/:acts_as_assets_asset_id/get"
+          subject.class.attachment_definitions[:asset][:url].should == "/books/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension"
         end
         it "should include correct path" do
           subject.class.attachment_definitions[:asset][:path].should == ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
@@ -118,7 +118,7 @@ describe "ActsAsAssets" do
           b = book
           doc = Books::Assets::TestDoc.create! :asset => jpg_test, :book => b
           @dtbd << doc
-          doc.asset.url.should match /\/books\/#{b.id}\/assets\/#{doc.id}\/get/
+          doc.asset.url.should match /\/books\/#{b.id}\/assets\/get\/#{doc.id}\/#{doc.asset.to_file.original_filename}/
         end
 
       end
@@ -155,9 +155,9 @@ describe "ActsAsAssets" do
         b = book
         doc = Books::Assets::TestImage.create! :asset => jpg_test, :book => b
         @dtbd << doc
-        doc.asset.url(:thumb).should match  /\/books\/#{b.id}\/assets\/#{doc.id}\/thumb\/get/
-        doc.asset.url(:medium).should match  /\/books\/#{b.id}\/assets\/#{doc.id}\/medium\/get/
-        doc.asset.url(:original).should match  /\/books\/#{b.id}\/assets\/#{doc.id}\/original\/get/
+        doc.asset.url(:thumb).should match  /\/books\/#{b.id}\/assets\/get\/#{doc.id}\/thumb\/#{doc.asset.to_file.original_filename}/
+        doc.asset.url(:medium).should match  /\/books\/#{b.id}\/assets\/get\/#{doc.id}\/medium\/#{doc.asset.to_file.original_filename}/
+        doc.asset.url(:original).should match  /\/books\/#{b.id}\/assets\/get\/#{doc.id}\/original\/#{doc.asset.to_file.original_filename}/
       end
 
     end
