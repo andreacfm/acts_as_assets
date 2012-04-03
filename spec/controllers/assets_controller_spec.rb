@@ -184,15 +184,16 @@ describe Books::AssetsController do
       it "should stream the asset" do
         should respond_with(:success)
         should respond_with_content_type("image/jpeg")
-        open("spec/temp/test.jpg", "wb") { |file|
+        dir = "#{File.dirname(__FILE__)}/../temp"
+        open("#{dir}/test.jpg", "wb") { |file|
           file.write(response.body)
         }
-        Paperclip::Geometry.from_file(File.expand_path("spec/temp/test.jpg")).to_s.should match /64/
+        Paperclip::Geometry.from_file(File.expand_path("#{dir}/test.jpg")).to_s.should match /64/
       end
 
     end
 
-    describe "when requiring a file that does not exixts" do
+    describe "when requiring a file that does not exists" do
       before  do
         @book = book
         get :get, :book_id => @book.id, :asset_id => 123456789
@@ -201,12 +202,6 @@ describe Books::AssetsController do
       it "should return 404 and attempt to render custom rails 404.html static file" do
         should respond_with(404)
       end
-
     end
-
   end
-
-
-
-
 end

@@ -162,6 +162,21 @@ describe "ActsAsAssets" do
 
     end
 
+    context "foreign_key" do
+      it "should have a method to hold the foreign key if specified" do
+        Books::AssetFk.should respond_to :foreign_key_name
+      end
+
+      it "should return the :foreign_key option when specified" do
+        Books::AssetFk.foreign_key_name.should eq "fk_name"
+      end
+
+      it "should fallback on asset_id if foreign key not specified" do
+        Books::Asset.foreign_key_name.should eq "book_id"
+      end
+
+    end
+
   end
 
 end

@@ -12,13 +12,11 @@ class ActsAsAssets::AssetsController < ApplicationController
     end
   end
 
-  def create
-    name = root_model_name
-    klazz = ([name.pluralize.camelize] << camelize_type.flatten).join('::')
-    @asset = klazz.constantize.create(:asset => params[:file],
-                                      :asset_content_type => MIME::Types.type_for(params[:file].original_filename)[0].to_s,
-                                      "#{name}".to_sym => instance_variable_get("@#{name}".to_sym))
 
+  def create
+    @asset = klazz.create(:asset => params[:file],
+                                      :asset_content_type => MIME::Types.type_for(params[:file].original_filename)[0].to_s,
+                                      "#{root_model_name}".to_sym => instance_variable_get("@#{root_model_name}".to_sym))
     respond_to do |format|
       if @asset.valid?
         format.js
@@ -57,18 +55,18 @@ class ActsAsAssets::AssetsController < ApplicationController
     send_file(@path, {:filename => @asset.asset.to_file.original_filename, :content_type => @asset.asset_content_type, :disposition => 'inline'})
   end
 
-
   private
 
   def load_assets
-    name = root_model_name
-    klazz = ([name.pluralize.camelize] << camelize_type.flatten).join('::')
-    @assets = klazz.constantize.send(:where,"#{name}_id".to_sym => params["#{name}_id".to_sym])
+    @assets = klazz.send(:where,"#{root_model_name}_id".to_sym => params["#{root_model_name}_id".to_sym])
+  end
+
+  def klazz
+    ([root_model_name.pluralize.camelize] << camelize_type.flatten).join('::').constantize
   end
 
   def assign_root_model
-    name = root_model_name
-    instance_variable_set "@#{name}", name.camelize.constantize.send(:find, params["#{name}_id".to_sym])
+    instance_variable_set "@#{root_model_name}", root_model_name.camelize.constantize.send(:find, params["#{root_model_name}_id".to_sym])
   end
 
   def root_model_name

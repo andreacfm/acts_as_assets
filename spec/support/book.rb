@@ -10,6 +10,13 @@ module Books
 end
 
 module Books
+  class AssetFk < ActiveRecord::Base
+    self.table_name = "books_assets"
+    acts_as_assets :foreign_key => "fk_name"
+  end
+end
+
+module Books
   module Assets
     class TestDoc < Books::Asset
     end

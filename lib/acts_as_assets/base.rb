@@ -15,19 +15,32 @@ module ActsAsAssets
 
   module ClassMethods
 
+    define_method :foreign_key_name do
+      @foreign_key_name
+    end
+
+
     def acts_as_assets *args
       include InstanceMethods
       belongs_to root_model
 
       options = args.extract_options!
+
       paperclip_config = {
           :url => options.include?(:styles) ?
               "/#{root_model.to_s.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension" :
               "/#{root_model.to_s.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension",
           :path => options.include?(:styles) ? ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension" : ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
       }
+
+      @foreign_key_name = options[:foreign_key] || "#{root_model_name}_id"
+
       has_attached_file :asset, paperclip_config.merge(options)
       before_create :touch_counter
+    end
+
+    def root_model_name
+      ActiveSupport::Inflector.underscore(self.to_s.split('::').first.singularize)
     end
 
     def root_model
