@@ -4,23 +4,17 @@ require "acts_as_assets/unique_asset"
 module ActsAsAssets
 
   module Base
+    extend ActiveSupport::Concern
 
-    def self.included base
-      base.class_eval do
-        extend ClassMethods
-      end
+    included do
+      extend ClassMethods
     end
-
   end
 
   module ClassMethods
-
-    define_method :foreign_key_name do
-      @foreign_key_name
-    end
-
-
     def acts_as_assets *args
+      cattr_accessor :foreign_key_name
+
       include InstanceMethods
       belongs_to root_model
 
@@ -33,9 +27,11 @@ module ActsAsAssets
           :path => options.include?(:styles) ? ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension" : ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
       }
 
-      @foreign_key_name = options[:foreign_key] || "#{root_model_name}_id"
+
+      self.foreign_key_name = (options[:foreign_key] || "#{root_model_name}_id").to_sym
 
       has_attached_file :asset, paperclip_config.merge(options)
+
       before_create :touch_counter
     end
 
@@ -44,7 +40,7 @@ module ActsAsAssets
     end
 
     def root_model
-      ActiveSupport::Inflector.underscore(self.to_s.split('::').first.singularize).to_sym
+      root_model_name.to_sym
     end
 
   end

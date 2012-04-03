@@ -124,10 +124,9 @@ describe Books::AssetsController do
   describe "destroy" do
 
     before :each do
-      @book = book
-      @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
+      @asset = Books::Assets::TestDoc.create!(:book => book, :asset => jpg_test)
       @dtbd << @asset
-      delete :destroy, :book_id => @book.id, :asset_id => @asset.id, :format => "js", :target => target
+      delete :destroy, :book_id => book.id, :type => "Assets/TestDoc", :asset_id => @asset.id, :format => "js", :target => target
     end
 
     it "should assign variables" do
@@ -157,7 +156,7 @@ describe Books::AssetsController do
         @book = book
         @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
         @dtbd << @asset
-        get :get, :book_id => @book.id, :asset_id => @asset.id
+        get :get, :book_id => @book.id, :asset_id => @asset.id, :type => "Assets/TestDoc"
       end
 
       it "should stream the asset" do
@@ -173,7 +172,7 @@ describe Books::AssetsController do
         @book = book
         @asset = Books::Assets::TestImage.create! :asset => jpg_test, :book => @book
         @dtbd << @asset
-        get :get, :book_id => @book.id, :asset_id => @asset.id, :style => "thumb"
+        get :get, :book_id => @book.id, :asset_id => @asset.id, :style => "thumb", :type => "Assets/TestDoc"
       end
 
       it "should assign path" do
@@ -196,7 +195,7 @@ describe Books::AssetsController do
     describe "when requiring a file that does not exists" do
       before  do
         @book = book
-        get :get, :book_id => @book.id, :asset_id => 123456789
+        get :get, :book_id => @book.id, :asset_id => 123456789,:type => "Assets/TestDoc"
       end
 
       it "should return 404 and attempt to render custom rails 404.html static file" do

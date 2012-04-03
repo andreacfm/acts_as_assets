@@ -168,11 +168,11 @@ describe "ActsAsAssets" do
       end
 
       it "should return the :foreign_key option when specified" do
-        Books::AssetFk.foreign_key_name.should eq "fk_name"
+        Books::AssetFk.foreign_key_name.should eq :fk_name
       end
 
       it "should fallback on asset_id if foreign key not specified" do
-        Books::Asset.foreign_key_name.should eq "book_id"
+        Books::Asset.foreign_key_name.should eq :book_id
       end
 
     end

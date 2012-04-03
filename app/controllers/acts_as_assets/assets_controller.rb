@@ -58,15 +58,15 @@ class ActsAsAssets::AssetsController < ApplicationController
   private
 
   def load_assets
-    @assets = klazz.send(:where,"#{root_model_name}_id".to_sym => params["#{root_model_name}_id".to_sym])
+    @assets = klazz.send(:where, klazz.foreign_key_name => params[klazz.foreign_key_name])
   end
 
   def klazz
-    ([root_model_name.pluralize.camelize] << camelize_type.flatten).join('::').constantize
+    ([root_model_name.pluralize.camelize] << camelize_type).join('::').constantize
   end
 
   def assign_root_model
-    instance_variable_set "@#{root_model_name}", root_model_name.camelize.constantize.send(:find, params["#{root_model_name}_id".to_sym])
+    instance_variable_set "@#{root_model_name}", root_model_name.camelize.constantize.send(:find, params[klazz.foreign_key_name])
   end
 
   def root_model_name
@@ -77,9 +77,9 @@ class ActsAsAssets::AssetsController < ApplicationController
     @target = params[:target]
   end
 
-  # takes a type params string like "my/asset/type_of_documento" and convert into [My,Asset,TypeOfDocument]
+  ## takes a type params string like "my/asset/type_of_documento" and convert into [My,Asset,TypeOfDocument]
   def camelize_type
-    params[:type].split('/').collect{|i|i.camelize}
+    params[:type].split('/').map { |i| i.camelize }.flatten if params[:type]
   end
 
   private
