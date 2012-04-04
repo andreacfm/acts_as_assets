@@ -17,13 +17,11 @@ describe Books::AssetsController do
 
     describe "destroy_path" do
       before do
-        @book = book
-        @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @dtbd << @asset
-        get :index, :book_id => @book.id, :type => "Assets/TestDoc"
+        @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
+        get :index, :book_id => book.id, :type => "Assets/TestDoc"
       end
       it "should return /books/id/assets/asset_id" do
-        subject.send(:destroy_path,@asset, target).should eq "/books/#{@book.id}/assets/#{@asset.id}?target=#{target}"
+        subject.send(:destroy_path,@asset, target).should eq "/books/#{book.id}/assets/#{@asset.id}?target=#{target}"
       end
     end
 
@@ -32,15 +30,13 @@ describe Books::AssetsController do
   context "filters" do
 
     context "assign_root_model" do
-
       before do
-        @book = book
-        get :index, :book_id => @book.id, :type => "Assets/TestDoc"
+        get :index, :book_id => book.id, :type => "Assets/TestDoc"
       end
 
       it "should assign @book" do
         subject.assign_to(:book)
-        assigns(:book).id.should eq @book.id
+        assigns(:book).id.should eq book.id
       end
     end
 
@@ -51,9 +47,7 @@ describe Books::AssetsController do
     context "format html" do
 
       before :each do
-        @book = book
-        @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @dtbd << @asset
+        @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
         get :index, :book_id => book.id, :type => "Assets/TestDoc", :target => target, :format => :html
       end
 
@@ -76,9 +70,7 @@ describe Books::AssetsController do
     context "format json" do
 
       before :each do
-        @book = book
-        @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @dtbd << @asset
+        @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
         get :index, :book_id => book.id, :type => "Assets/TestDoc", :target => target, :format => :json
       end
 
@@ -95,9 +87,7 @@ describe Books::AssetsController do
   describe "create" do
 
     before do
-      @book = book
-      post :create, :book_id => @book.id, :type => "Assets/TestDoc", :file => jpg_test, :format => "js"
-      @dtbd << assigns(:asset)
+      post :create, :book_id => book.id, :type => "Assets/TestDoc", :file => uploaded_test_asset, :format => "js"
     end
 
     it "should assign variables" do
@@ -124,8 +114,7 @@ describe Books::AssetsController do
   describe "destroy" do
 
     before :each do
-      @asset = Books::Assets::TestDoc.create!(:book => book, :asset => jpg_test)
-      @dtbd << @asset
+      @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
       delete :destroy, :book_id => book.id, :type => "Assets/TestDoc", :asset_id => @asset.id, :format => "js", :target => target
     end
 
@@ -153,10 +142,8 @@ describe Books::AssetsController do
 
     describe "sending existing file without style" do
       before  do
-        @book = book
-        @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @dtbd << @asset
-        get :get, :book_id => @book.id, :asset_id => @asset.id, :type => "Assets/TestDoc"
+        @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
+        get :get, :book_id => book.id, :asset_id => @asset.id, :type => "Assets/TestDoc"
       end
 
       it "should stream the asset" do
@@ -169,10 +156,8 @@ describe Books::AssetsController do
 
     describe "sending existing file with a required style" do
       before  do
-        @book = book
-        @asset = Books::Assets::TestImage.create! :asset => jpg_test, :book => @book
-        @dtbd << @asset
-        get :get, :book_id => @book.id, :asset_id => @asset.id, :style => "thumb", :type => "Assets/TestDoc"
+        @asset = Books::Assets::TestImage.create! :asset => uploaded_test_asset, :book => book
+        get :get, :book_id => book.id, :asset_id => @asset.id, :style => "thumb", :type => "Assets/TestDoc"
       end
 
       it "should assign path" do
@@ -194,8 +179,7 @@ describe Books::AssetsController do
 
     describe "when requiring a file that does not exists" do
       before  do
-        @book = book
-        get :get, :book_id => @book.id, :asset_id => 123456789,:type => "Assets/TestDoc"
+        get :get, :book_id => book.id, :asset_id => 123456789,:type => "Assets/TestDoc"
       end
 
       it "should return 404 and attempt to render custom rails 404.html static file" do

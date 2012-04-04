@@ -55,7 +55,7 @@ module ActsAsAssets
 
     def touch_counter
       max = self.class.maximum(:counter, :conditions => {self.class.foreign_key_name => self.send(self.class.foreign_key_name)})
-      self.counter = max.nil? ? 1 : max+1
+      self.counter = max.to_i + 1
     end
 
     def root_id

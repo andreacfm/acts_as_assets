@@ -43,16 +43,11 @@ RSpec.configure do |config|
 
   end
 
-  #destroy created assets
-  config.before :all do
-    @dtbd = []
-  end
-  config.after :all do
+  config.after :suite do
     require 'fileutils'
-    @dtbd.each {|d| d.destroy unless d.nil? }
-    Dir[File.expand_path("spec/temp/*")].each do |file|
-      FileUtils.rm file
-    end
+    Dir[File.expand_path("../public/*", __FILE__)].each {|file| FileUtils.rm_rf file }
+    Dir[File.expand_path("../temp/*", __FILE__)].each {|file| FileUtils.rm_rf file }
+    puts "Cleaned up files"
   end
 
   config.before(:each) do
@@ -61,10 +56,7 @@ RSpec.configure do |config|
     Book.delete_all
   end
 
-  config.after(:suite) do
-  end
-
-  def jpg_test
+  def uploaded_test_asset
     Rack::Test::UploadedFile.new(File.expand_path('../resources/jpg_test.jpg',__FILE__), "image/jpeg")
   end
 
