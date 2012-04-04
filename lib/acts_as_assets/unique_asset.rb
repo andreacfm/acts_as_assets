@@ -8,8 +8,8 @@ module ActsAsAssets::UniqueAsset
     module InstanceMethods
 
       def acts_as_assets_check_uniqness
-        key = "#{self.class.root_model}_id"
-        obj = self.class.send("find_by_#{key}".to_sym,self.send(key.to_sym))
+
+        obj = self.class.send("find_by_#{self.class.foreign_key_name}".to_sym, self.send(self.class.foreign_key_name.to_sym))
         if obj
           errors.add(self.type, I18n.translate('acts_as_assets.unique_asset_error'))
         end

@@ -54,12 +54,12 @@ module ActsAsAssets
     private
 
     def touch_counter
-      max = self.class.maximum(:counter, :conditions => {"#{self.class.root_model}_id".to_sym => self.send("#{self.class.root_model}_id".to_sym)})
+      max = self.class.maximum(:counter, :conditions => {self.class.foreign_key_name => self.send(self.class.foreign_key_name)})
       self.counter = max.nil? ? 1 : max+1
     end
 
     def root_id
-      send(self.class.root_model).id
+      send(self.class.foreign_key_name)
     end
 
     def acts_as_assets_file_path
