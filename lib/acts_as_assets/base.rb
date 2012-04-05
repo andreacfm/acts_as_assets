@@ -28,19 +28,19 @@ module ActsAsAssets
       }
 
 
-      self.foreign_key_name = (options[:foreign_key] || "#{root_model_name}_id").to_sym
+      self.foreign_key_name = (options[:foreign_key] || "#{model_name}_id").to_sym
 
       has_attached_file :asset, paperclip_config.merge(options)
 
       before_create :touch_counter
     end
 
-    def root_model_name
+    def model_name
       self.to_s.split('::').first.underscore.singularize
     end
 
     def model_sym
-      root_model_name.to_sym
+      model_name.to_sym
     end
 
   end
@@ -51,13 +51,12 @@ module ActsAsAssets
     end
 
     private
-
     def touch_counter
       max = self.class.maximum(:counter, :conditions => {self.class.foreign_key_name => self.send(self.class.foreign_key_name)})
       self.counter = max.to_i + 1
     end
 
-    def root_id
+    def model_fk
       send(self.class.foreign_key_name)
     end
 
@@ -65,7 +64,7 @@ module ActsAsAssets
       a = ActiveSupport::Inflector.underscore(self.type).split('/').prepend "public", "system"
       a.pop
       root_model_index = a.index(self.class.model_sym.to_s.pluralize)
-      a.insert root_model_index + 1, root_id
+      a.insert root_model_index + 1, model_fk
       a.join '/'
     end
 

@@ -59,12 +59,11 @@ describe "ActsAsAssets" do
         end
       end
 
-      describe "root_id" do
+      describe "model_fk" do
         it "should return book.id" do
-          b = book
-          subject.book_id = b.id
+          subject.book_id = book.id
           subject.save!
-          subject.send(:root_id).should eq b.id
+          subject.send(:model_fk).should eq book.id
         end
       end
 

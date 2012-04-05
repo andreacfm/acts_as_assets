@@ -76,9 +76,9 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def assign_root_model
     puts "-------------->>>>>>>>>>>>>>> klazz.foreign_key_name: #{klazz.foreign_key_name}"
-    puts "-------------->>>>>>>>>>>>>>> #{klazz.root_model_name.camelize}.find('#{params[klazz.foreign_key_name]}')"
-    instance_variable_set "@#{klazz.root_model_name}",
-                          klazz.root_model_name.camelize.constantize.send(:find, params[klazz.foreign_key_name])
+    puts "-------------->>>>>>>>>>>>>>> #{klazz.model_name.camelize}.find('#{params[klazz.foreign_key_name]}')"
+    instance_variable_set "@#{klazz.model_name}",
+                          klazz.model_name.camelize.constantize.send(:find, params[klazz.foreign_key_name])
   end
 
   def assign_target

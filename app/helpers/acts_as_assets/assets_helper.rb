@@ -8,7 +8,7 @@ module ActsAsAssets::AssetsHelper
   end
 
   def name_from(asset)
-    asset.class.root_model_name
+    asset.class.model_name
   end
 
 end
