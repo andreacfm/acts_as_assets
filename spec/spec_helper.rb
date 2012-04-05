@@ -25,12 +25,19 @@ RSpec.configure do |config|
   config.before :suite do
     ActiveRecord::Base.connection.create_table(:books,:force => true) do |t|
       t.string :title
+      t.string :name
     end
     ActiveRecord::Base.connection.create_table(:books_assets,:force => true) do |t|
       t.has_attached_file :asset
       t.string :type
       t.integer :counter, :default => 0, :null => false
       t.integer :book_id
+    end
+    ActiveRecord::Base.connection.create_table(:books_assets_fk,:force => true) do |t|
+      t.has_attached_file :asset
+      t.string :type
+      t.integer :counter, :default => 0, :null => false
+      t.string :book_name
     end
     Rails.application.routes.draw do
       scope "books/:book_id/assets/" do

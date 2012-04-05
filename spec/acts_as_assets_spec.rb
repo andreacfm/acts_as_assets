@@ -30,10 +30,8 @@ describe "ActsAsAssets" do
         end
       end
 
-      describe "root_model" do
-        it "should return :book" do
-          subject.class.root_model.should eq :book
-        end
+      describe "model_sym" do
+        specify { subject.class.model_sym.should eq :book }
       end
 
       describe "acts_as_assets_file_name" do

@@ -8,20 +8,14 @@ describe Books::AssetsController do
   let(:target){'target_div'}
 
   context "given a Books::AssetsController controller " do
-
-    describe "root_model_name" do
-      it "should return book" do
-        subject.send(:root_model_name).should eq 'book'
-      end
-    end
-
     describe "destroy_path" do
       before do
         @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
         get :index, :book_id => book.id, :type => "Assets/TestDoc"
       end
+
       it "should return /books/id/assets/asset_id" do
-        subject.send(:destroy_path,@asset, target).should eq "/books/#{book.id}/assets/#{@asset.id}?target=#{target}"
+        subject.send(:destroy_path, @asset, target).should eq "/books/#{book.id}/assets/#{@asset.id}?target=#{target}"
       end
     end
 
