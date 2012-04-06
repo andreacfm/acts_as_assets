@@ -3,6 +3,7 @@ require "spec_helper"
 describe "ActsAsAssets" do
 
   let(:book) { Book.create!(:title => "my new book") }
+  let(:chap) { Chapter.create!(:id => "a new chapter") }
 
   describe "model that acts as assets" do
     subject { Books::Asset.new }
@@ -70,7 +71,7 @@ describe "ActsAsAssets" do
       describe "touch_counter" do
 
         it "should set counter = 1 by default if counter is actually nil" do
-          subject.send :touch_counter
+          subject.send :increment_counter
           subject.counter.should eq 1
         end
       end
@@ -82,7 +83,7 @@ describe "ActsAsAssets" do
 
     context "before_create" do
 
-      describe "touch_counter" do
+      describe "increment_counter" do
 
         it "should increase counter by one if a document of the same type are created" do
           dc = Books::Assets::TestDoc.create!
@@ -98,7 +99,6 @@ describe "ActsAsAssets" do
     context "interpolations" do
 
       describe "path/url" do
-
         it "should interpolate the correct path for a subclass instance" do
           doc = Books::Assets::TestDoc.create! :asset => uploaded_test_asset, :book => book
           doc.asset.path.should eq "public/system/books/#{book.id}/assets/test_doc.jpg"
@@ -108,9 +108,11 @@ describe "ActsAsAssets" do
           doc = Books::Assets::TestDoc.create! :asset => uploaded_test_asset, :book => book
           doc.asset.url.should match /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/#{doc.asset.to_file.original_filename}/
         end
-
+        it "should interpolate the correct url for a subclass instance with natural FK" do
+          chapter = Chapters::Assets::Paragraph.create!(:chapter => chap, :asset => uploaded_test_asset)
+          chapter.asset.url.should match /\/chapters\/a%20new%20chapter\/assets\/get\/#{chapter.id}\/#{chapter.asset.to_file.original_filename}/
+        end
       end
-
     end
 
   end
@@ -148,17 +150,20 @@ describe "ActsAsAssets" do
 
     context "foreign_key" do
       it "should have a method to hold the foreign key if specified" do
-        Books::AssetFk.should respond_to :foreign_key_name
+        Chapters::Asset.should respond_to :foreign_key_name
       end
 
       it "should return the :foreign_key option when specified" do
-        Books::AssetFk.foreign_key_name.should eq :fk_name
+        Chapters::Asset.foreign_key_name.should eq :chapter_name
+      end
+
+      it "should return the :foreign_key option when specified even for the child classes" do
+        Chapters::Assets::Paragraph.foreign_key_name.should eq :chapter_name
       end
 
       it "should fallback on asset_id if foreign key not specified" do
         Books::Asset.foreign_key_name.should eq :book_id
       end
-
     end
 
   end

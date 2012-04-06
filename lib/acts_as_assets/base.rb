@@ -16,7 +16,7 @@ module ActsAsAssets
       cattr_accessor :foreign_key_name
 
       include InstanceMethods
-      belongs_to model_sym
+
 
       options = args.extract_options!
 
@@ -30,9 +30,11 @@ module ActsAsAssets
 
       self.foreign_key_name = (options[:foreign_key] || "#{model_name}_id").to_sym
 
+      belongs_to model_sym, :foreign_key => self.foreign_key_name
+
       has_attached_file :asset, paperclip_config.merge(options)
 
-      before_create :touch_counter
+      before_create :increment_counter
     end
 
     def model_name
@@ -51,9 +53,12 @@ module ActsAsAssets
     end
 
     private
-    def touch_counter
-      max = self.class.maximum(:counter, :conditions => {self.class.foreign_key_name => self.send(self.class.foreign_key_name)})
-      self.counter = max.to_i + 1
+    def increment_counter
+      self.counter = number_of_file_for_type + 1
+    end
+
+    def number_of_file_for_type
+      self.class.maximum(:counter, :conditions => {self.class.foreign_key_name => self.send(self.class.foreign_key_name)}).to_i
     end
 
     def model_fk
@@ -61,18 +66,27 @@ module ActsAsAssets
     end
 
     def acts_as_assets_file_path
-      a = ActiveSupport::Inflector.underscore(self.type).split('/').prepend "public", "system"
-      a.pop
-      root_model_index = a.index(self.class.model_sym.to_s.pluralize)
-      a.insert root_model_index + 1, model_fk
-      a.join '/'
+      a = absolute_directory_for_asset_as_array
+      root_model_index = a.index(self.class.model_name.pluralize)
+      a.insert(root_model_index + 1, model_fk)
+      a.join('/')
     end
 
     def acts_as_assets_file_name
-      a = ActiveSupport::Inflector.underscore(self.type).split('/')
-      self.counter > 1 ? "#{a.last}_#{counter}" : a.last
+      self.counter > 1 ? "#{_file_name}_#{counter}" : _file_name
     end
 
+    def _file_name
+      relative_directory_for_asset_as_array.last
+    end
+
+    def relative_directory_for_asset_as_array
+      self.type.underscore.split('/')
+    end
+
+    def absolute_directory_for_asset_as_array
+      relative_directory_for_asset_as_array.unshift("public", "system").instance_eval { pop; self }
+    end
   end
 
 end
