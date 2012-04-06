@@ -82,22 +82,17 @@ describe "ActsAsAssets" do
   context "callbacks" do
 
     context "before_create" do
-
       describe "increment_counter" do
-
         it "should increase counter by one if a document of the same type are created" do
           dc = Books::Assets::TestDoc.create!
           dc2 = Books::Assets::TestDoc.create!
           Books::Asset.find(dc.id).counter.should eq 1
           Books::Asset.find(dc2.id).counter.should eq 2
         end
-
       end
-
     end
 
     context "interpolations" do
-
       describe "path/url" do
         it "should interpolate the correct path for a subclass instance" do
           doc = Books::Assets::TestDoc.create! :asset => uploaded_test_asset, :book => book
@@ -114,7 +109,6 @@ describe "ActsAsAssets" do
         end
       end
     end
-
   end
 
   context "using paperclip styles" do
@@ -127,18 +121,15 @@ describe "ActsAsAssets" do
         definitions.should include(:thumb)
         definitions.should include(:medium)
       end
-
       it "should include :style interpolation in the path definition" do
         subject.class.attachment_definitions[:asset][:path].should == ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension"
       end
-
       it "should create the thumb/medium and original image in the correct path" do
         doc = Books::Assets::TestImage.create! :asset => uploaded_test_asset, :book => book
         doc.asset.path(:thumb).should eq "public/system/books/#{book.id}/assets/thumb/test_image.jpg"
         doc.asset.path(:original).should eq "public/system/books/#{book.id}/assets/original/test_image.jpg"
         doc.asset.path(:medium).should eq "public/system/books/#{book.id}/assets/medium/test_image.jpg"
       end
-
       it "should have style param in the url" do
         doc = Books::Assets::TestImage.create! :asset => uploaded_test_asset, :book => book
         doc.asset.url(:thumb).should match  /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/thumb\/#{doc.asset.to_file.original_filename}/

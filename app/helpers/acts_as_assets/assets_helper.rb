@@ -1,6 +1,6 @@
 module ActsAsAssets::AssetsHelper
   def destroy_path asset, target
-    send(destroy_method_for(asset), instance_variable_get("@#{name_from(asset)}"), :asset_id => asset.id, :target => target)
+    send(destroy_method_for(asset), instance_variable_get("@#{name_from(asset)}"), {:asset_id => asset.id, :target => target})
   end
 
   def destroy_method_for(asset)
@@ -8,7 +8,7 @@ module ActsAsAssets::AssetsHelper
   end
 
   def name_from(asset)
-    asset.class.model_name
+    asset.class.asset_model_name
   end
 
 end

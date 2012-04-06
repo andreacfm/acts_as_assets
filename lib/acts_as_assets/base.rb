@@ -27,8 +27,7 @@ module ActsAsAssets
           :path => options.include?(:styles) ? ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension" : ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
       }
 
-
-      self.foreign_key_name = (options[:foreign_key] || "#{model_name}_id").to_sym
+      self.foreign_key_name = (options[:foreign_key] || "#{asset_model_name}_id").to_sym
 
       belongs_to model_sym, :foreign_key => self.foreign_key_name
 
@@ -37,12 +36,12 @@ module ActsAsAssets
       before_create :increment_counter
     end
 
-    def model_name
+    def asset_model_name
       self.to_s.split('::').first.underscore.singularize
     end
 
     def model_sym
-      model_name.to_sym
+      asset_model_name.to_sym
     end
 
   end
@@ -67,7 +66,7 @@ module ActsAsAssets
 
     def acts_as_assets_file_path
       a = absolute_directory_for_asset_as_array
-      root_model_index = a.index(self.class.model_name.pluralize)
+      root_model_index = a.index(self.class.asset_model_name.pluralize)
       a.insert(root_model_index + 1, model_fk)
       a.join('/')
     end

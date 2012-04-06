@@ -23,14 +23,14 @@ describe Books::AssetsController do
 
   context "filters" do
 
-    context "assign_root_model" do
+    context "load_model" do
       before do
         get :index, :book_id => book.id, :type => "Assets/TestDoc"
       end
 
       it "should assign @book" do
         subject.assign_to(:book)
-        assigns(:book).id.should eq book.id
+        assigns(:model).id.should eq book.id
       end
     end
 
@@ -48,7 +48,7 @@ describe Books::AssetsController do
       it "should assign variables" do
         should assign_to(:assets)
         should assign_to(:target)
-        should assign_to(:book)
+        should assign_to(:model)
       end
 
       it{should respond_with(:success)}
@@ -86,7 +86,7 @@ describe Books::AssetsController do
 
     it "should assign variables" do
       should assign_to(:asset)
-      should assign_to(:book)
+      should assign_to(:model)
     end
 
     it "should save the correct content_type" do
@@ -115,7 +115,7 @@ describe Books::AssetsController do
     it "should assign variables" do
       should assign_to(:asset)
       should assign_to(:target)
-      should assign_to(:book)
+      should assign_to(:model)
     end
 
     it "should be success returning the correct content type and a json string reporting succes == true" do

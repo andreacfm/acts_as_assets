@@ -1,7 +1,6 @@
 class ActsAsAssets::AssetsController < ApplicationController
   include ActsAsAssets::AssetsHelper
   helper_method :destroy_path
-  before_filter :assign_root_model
   before_filter :load_model
   before_filter :assign_target, :only => [:index, :destroy]
   before_filter :load_assets, :only => [:index]
@@ -15,9 +14,6 @@ class ActsAsAssets::AssetsController < ApplicationController
 
 
   def create
-    puts "----------------->>>>>>>>>>>>>> #{klazz.model_sym}"
-    puts "----------------->>>>>>>>>>>>>> #{@model}"
-
     @asset = klazz.create(:asset => params[:file], :asset_content_type => mime_type(params[:file]), klazz.model_sym => @model)
 
     respond_to do |format|
@@ -31,7 +27,7 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def destroy
     begin
-      @asset = @model.send(:assets).find_by_id(params[:asset_id])
+      @asset = @model.assets.find_by_id(params[:asset_id])
       @asset.destroy
     rescue Exception => e
       error = e.message
@@ -63,31 +59,25 @@ class ActsAsAssets::AssetsController < ApplicationController
   end
 
   def load_assets
-    @assets = klazz.send(:where, klazz.foreign_key_name => params[klazz.foreign_key_name])
-  end
-
-  def load_model
-    @model ||= instance_variable_get("@#{klazz.model_sym}")
+    @assets = klazz.where(klazz.foreign_key_name => params[klazz.foreign_key_name])
   end
 
   def klazz
     ([self.class.to_s.split('::').first] << camelize_type).join('::').constantize
   end
 
-  def assign_root_model
-    puts "-------------->>>>>>>>>>>>>>> klazz.foreign_key_name: #{klazz.foreign_key_name}"
-    puts "-------------->>>>>>>>>>>>>>> #{klazz.model_name.camelize}.find('#{params[klazz.foreign_key_name]}')"
-    instance_variable_set "@#{klazz.model_name}",
-                          klazz.model_name.camelize.constantize.send(:find, params[klazz.foreign_key_name])
+    ## takes a type params string like "my/asset/type_of_documento" and convert into [My,Asset,TypeOfDocument]
+  def camelize_type
+    raise ":type of asset is mandatory and not specified" unless params[:type]
+    params[:type].split('/').map { |i| i.camelize }.flatten
+  end
+
+  def load_model
+    @model = klazz.asset_model_name.camelize.constantize.find(params[klazz.foreign_key_name])
   end
 
   def assign_target
     @target = params[:target]
-  end
-
-  ## takes a type params string like "my/asset/type_of_documento" and convert into [My,Asset,TypeOfDocument]
-  def camelize_type
-    params[:type].split('/').map { |i| i.camelize }.flatten if params[:type]
   end
 
   private
