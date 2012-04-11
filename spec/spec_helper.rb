@@ -12,7 +12,10 @@ require 'paperclip/matchers'
 
 require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 ENGINE_RAILS_ROOT=File.join(File.dirname(__FILE__), '../')
-Dir[File.join(ENGINE_RAILS_ROOT, "spec/support/**/*.rb")].each {|f| require f }
+
+Dir[File.join(ENGINE_RAILS_ROOT, "spec/support/*.rb")].each {|f| require f }
+#require "#{ENGINE_RAILS_ROOT}/spec/support/tipi_pannello/asset.rb"
+#require "#{ENGINE_RAILS_ROOT}/spec/support/tipi_pannello/documenti/scheda_tecnica.rb"
 
 require 'rspec/rails'
 
@@ -41,6 +44,16 @@ RSpec.configure do |config|
       t.integer :counter, :default => 0, :null => false
       t.string :chapter_name
     end
+    ActiveRecord::Base.connection.create_table(:rt_tipi_pannello, {:id => false, :force => true}) do |t|
+      t.string :name, :null => false
+    end
+    ActiveRecord::Base.connection.create_table(:rt_tipi_pannello_assets, :force => true) do |t|
+      t.has_attached_file :asset
+      t.string :type
+      t.integer :counter, :default => 0, :null => false
+      t.boolean :displayable, :default => false, :null => false
+      t.string :tipo_pannello_name
+    end
     Rails.application.routes.draw do
       scope "books/:book_id/assets/" do
         get 'get/:asset_id/(:style)/:filename.:extension' => 'books/assets#get', :as => 'book_get_asset'
@@ -53,6 +66,12 @@ RSpec.configure do |config|
         get '*type' => 'chapters/assets#index', :as => 'chapter_assets'
         post '*type' => 'chapters/assets#create', :as => 'chapter_create_asset'
         delete ':asset_id' => 'chapters/assets#destroy', :as => 'chapter_destroy_asset'
+      end
+      scope "tipi_pannello/:tipo_pannello_name/assets/" do
+        get 'get/:asset_id/(:style)/:filename.:extension' => 'tipi_pannello/assets#get', :as => 'tipo_pannello_get_asset'
+        get '*type' => 'tipi_pannello/assets#index', :as => 'tipo_pannello_assets'
+        post '*type' => 'tipi_pannello/assets#create', :as => 'tipo_pannello_create_asset'
+        delete ':asset_id' => 'tipi_pannello/assets#destroy', :as => 'tipo_pannello_destroy_asset'
       end
     end
   end

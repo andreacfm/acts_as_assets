@@ -4,6 +4,7 @@ describe "ActsAsAssets" do
 
   let(:book) { Book.create!(:title => "my new book") }
   let(:chap) { Chapter.create!(:id => "a new chapter") }
+  let(:suntech) {TipoPannello.create!(:id=>'Suntech STP')}
 
   describe "model that acts as assets" do
     subject { Books::Asset.new }
@@ -49,7 +50,6 @@ describe "ActsAsAssets" do
           subject.counter = 4
           subject.send(:acts_as_assets_file_name).should eq 'test_doc_4'
         end
-
       end
 
       describe "acts_as_assets_file_path" do
@@ -58,13 +58,17 @@ describe "ActsAsAssets" do
           subject.save!
           subject.send(:acts_as_assets_file_path).should eq "public/system/books/#{book.id}/assets"
         end
+        it "should check file path for natural keys" do
+          t = TipiPannello::Documenti::SchedaTecnica.create!(:tipo_pannello => suntech, :asset => uploaded_test_asset)
+          t.send(:acts_as_assets_file_path).should eq "public/system/tipi_pannello/Suntech STP/documenti"
+        end
       end
 
-      describe "model_fk" do
+      describe "foreign_key_value" do
         it "should return book.id" do
           subject.book_id = book.id
           subject.save!
-          subject.send(:model_fk).should eq book.id
+          subject.send(:foreign_key_value).should eq book.id
         end
       end
 
@@ -98,14 +102,17 @@ describe "ActsAsAssets" do
           doc = Books::Assets::TestDoc.create! :asset => uploaded_test_asset, :book => book
           doc.asset.path.should eq "public/system/books/#{book.id}/assets/test_doc.jpg"
         end
-
         it "should interpolate the correct url for a subclass instance" do
           doc = Books::Assets::TestDoc.create! :asset => uploaded_test_asset, :book => book
           doc.asset.url.should match /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/#{doc.asset.to_file.original_filename}/
         end
-        it "should interpolate the correct url for a subclass instance with natural FK" do
+        it "should interpolate the correct path for a subclass instance" do
           chapter = Chapters::Assets::Paragraph.create!(:chapter => chap, :asset => uploaded_test_asset)
-          chapter.asset.url.should match /\/chapters\/a%20new%20chapter\/assets\/get\/#{chapter.id}\/#{chapter.asset.to_file.original_filename}/
+          chapter.asset.path.should eq "public/system/chapters/#{chap.name}/assets/paragraph.jpg"
+        end
+        it "should interpolate the correct path for a subclass instance" do
+          chapter = Chapters::Assets::Paragraph.create!(:chapter => chap, :asset => uploaded_test_asset)
+          chapter.asset.path.should eq "public/system/chapters/#{chap.name}/assets/paragraph_2.jpg"
         end
       end
     end

@@ -1,12 +1,2 @@
-<%# coding: utf-8 %>
-<% @assets.each do |doc| %>
-
-    <div class="grid_6 document_link">
-            <%= link_to doc.asset.to_file.original_filename, doc.asset.url %>
-            <%= link_to t('destroy'), destroy_path(doc,@target),
-                       :method => :delete, :confirm => 'Sei Sicuro?', :remote => true %>
-    </div>
-
-    <div class="clear"></div>
-
-<% end %>
+<%# encoding: utf-8 %>
+<% render :partial => 'acts_as_assets/assets/file_upload' %>

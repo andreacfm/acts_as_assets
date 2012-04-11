@@ -1,0 +1,5 @@
+<div class="download_destroy_class <%= download_destroy_class %>">
+    <%= link_to asset_file_name(asset), asset_file_path(asset) %>
+    <%= link_to t('destroy'), destroy_file_path(asset), :method => :delete, :confirm => 'Sei Sicuro?', :remote => true %>
+</div>
+<div class="clear"></div>

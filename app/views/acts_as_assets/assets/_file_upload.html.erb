@@ -1,0 +1,9 @@
+<%# encoding: utf-8 %>
+<% model ||= @pratica %>
+<div class="grid_6"><label><%= asset_label %></label></div>
+<div class="grid_6">
+    <%= render :partial => "acts_as_assets/assets/upload_link", :locals => {:multiple => multiple, :model => model} %>
+</div>
+<div class="clear"></div>
+<%= render :partial => "acts_as_assets/assets/assets", :locals => {:assets => Array(assets)} %>
+<div class="clear"></div>

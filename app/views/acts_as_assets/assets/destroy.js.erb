@@ -1,1 +1,2 @@
-{"success":"true"}
+console.log("acts_as_assets destroy.js.erb called")
+$("#<%= asset_id %>").html("<%= j render(:partial => 'acts_as_assets/assets/assets', :locals => {:assets => Array(@assets)}) %>");

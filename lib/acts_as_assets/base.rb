@@ -14,26 +14,40 @@ module ActsAsAssets
   module ClassMethods
     def acts_as_assets *args
       cattr_accessor :foreign_key_name
+      cattr_accessor :base_model_name
+      cattr_accessor :base_model
 
       include InstanceMethods
-
 
       options = args.extract_options!
 
       paperclip_config = {
-          :url => options.include?(:styles) ?
-              "/#{model_sym.to_s.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension" :
-              "/#{model_sym.to_s.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension",
-          :path => options.include?(:styles) ? ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension" : ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
+          :url => options.include?(:styles) ? url_with_styles : url_without_styles,
+          :path => options.include?(:styles) ? path_with_styles : path_without_styles
       }
 
       self.foreign_key_name = (options[:foreign_key] || "#{asset_model_name}_id").to_sym
+      self.base_model_name = asset_model_name
+      self.base_model = asset_model_name.camelize.constantize
 
       belongs_to model_sym, :foreign_key => self.foreign_key_name
-
       has_attached_file :asset, paperclip_config.merge(options)
 
       before_create :increment_counter
+
+    end
+
+    def url_with_styles
+      "/#{asset_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension"
+    end
+    def url_without_styles
+      "/#{asset_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension"
+    end
+    def path_with_styles
+      ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension"
+    end
+    def path_without_styles
+      ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
     end
 
     def asset_model_name
@@ -57,18 +71,15 @@ module ActsAsAssets
     end
 
     def number_of_file_for_type
-      self.class.maximum(:counter, :conditions => {self.class.foreign_key_name => self.send(self.class.foreign_key_name)}).to_i
+      self.class.maximum(:counter, :conditions => {self.foreign_key_name => self.send(self.foreign_key_name)}).to_i
     end
 
-    def model_fk
-      send(self.class.foreign_key_name)
+    def foreign_key_value
+      self.send(foreign_key_name)
     end
 
     def acts_as_assets_file_path
-      a = absolute_directory_for_asset_as_array
-      root_model_index = a.index(self.class.asset_model_name.pluralize)
-      a.insert(root_model_index + 1, model_fk)
-      a.join('/')
+      absolute_directory_for_asset_as_array.insert(3, foreign_key_value).join('/')
     end
 
     def acts_as_assets_file_name
