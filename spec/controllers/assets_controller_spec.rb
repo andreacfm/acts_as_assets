@@ -11,28 +11,13 @@ describe Books::AssetsController do
     describe "destroy_path" do
       before do
         @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
-        get :index, :book_id => book.id, :type => "Assets/TestDoc"
+        get :index, :book_id => book.id, :type => "Assets/TestDoc", :multiple => true
       end
 
       it "should return /books/id/assets/asset_id" do
-        subject.send(:destroy_path, @asset, target).should eq "/books/#{book.id}/assets/#{@asset.id}?target=#{target}"
+        subject.send(:destroy_path, @asset, target, @type).should eq "/books/#{book.id}/assets/#{@asset.id}?target=#{target}"
       end
     end
-
-  end
-
-  context "filters" do
-
-    #context "load_model" do
-    #  before do
-    #    get :index, :book_id => book.id, :type => "Assets/TestDoc"
-    #  end
-    #
-    #  it "should assign @book" do
-    #    subject.assign_to(:book)
-    #    assigns(:model).id.should eq book.id
-    #  end
-    #end
 
   end
 
@@ -48,7 +33,6 @@ describe Books::AssetsController do
       it "should assign variables" do
         should assign_to(:assets)
         should assign_to(:target)
-        #should assign_to(:model)
       end
 
       it{should respond_with(:success)}
@@ -56,6 +40,7 @@ describe Books::AssetsController do
       it{should render_template('acts_as_assets/assets/index')}
 
       it "should return the correct formatted view" do
+        pending "TODO port the tag "
         response.body.should match(/#{@asset.asset.to_file.original_filename}/)
       end
 
@@ -86,7 +71,6 @@ describe Books::AssetsController do
 
     it "should assign variables" do
       should assign_to(:asset)
-      #should assign_to(:model)
     end
 
     it "should save the correct content_type" do
@@ -115,11 +99,9 @@ describe Books::AssetsController do
     it "should assign variables" do
       should assign_to(:asset)
       should assign_to(:target)
-      #should assign_to(:model)
     end
 
-    it "should be success returning the correct content type and a json string reporting succes == true" do
-      ActiveSupport::JSON.decode(response.body)["success"].should be_true
+    it "should be success returning the correct content type" do
       should respond_with_content_type(:js)
       should respond_with(:success)
     end

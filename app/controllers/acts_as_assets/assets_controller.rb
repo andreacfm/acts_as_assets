@@ -7,6 +7,7 @@ class ActsAsAssets::AssetsController < ApplicationController
   before_filter :load_assets, :only => [:index, :destroy]
 
   def index
+    @model = klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))
     respond_to do |format|
       format.html { render :layout => false }
       format.json { render :json => @assets }

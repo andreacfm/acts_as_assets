@@ -14,8 +14,6 @@ require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 ENGINE_RAILS_ROOT=File.join(File.dirname(__FILE__), '../')
 
 Dir[File.join(ENGINE_RAILS_ROOT, "spec/support/*.rb")].each {|f| require f }
-#require "#{ENGINE_RAILS_ROOT}/spec/support/tipi_pannello/asset.rb"
-#require "#{ENGINE_RAILS_ROOT}/spec/support/tipi_pannello/documenti/scheda_tecnica.rb"
 
 require 'rspec/rails'
 
@@ -93,4 +91,5 @@ RSpec.configure do |config|
     Rack::Test::UploadedFile.new(File.expand_path('../resources/jpg_test.jpg',__FILE__), "image/jpeg")
   end
 
+  def uploader_field_tag(name, *args); end
 end
