@@ -32,6 +32,7 @@ RSpec.configure do |config|
       t.string :type
       t.integer :counter, :default => 0, :null => false
       t.integer :book_id
+      t.boolean :displayable, :default => false, :null => false
     end
     ActiveRecord::Base.connection.create_table(:chapters, {:id => false, :force => true}) do |t|
       t.string :name, :null => false
@@ -41,6 +42,7 @@ RSpec.configure do |config|
       t.string :type
       t.integer :counter, :default => 0, :null => false
       t.string :chapter_name
+      t.boolean :displayable, :default => false, :null => false
     end
     ActiveRecord::Base.connection.create_table(:rt_tipi_pannello, {:id => false, :force => true}) do |t|
       t.string :name, :null => false
@@ -91,5 +93,5 @@ RSpec.configure do |config|
     Rack::Test::UploadedFile.new(File.expand_path('../resources/jpg_test.jpg',__FILE__), "image/jpeg")
   end
 
-  def uploader_field_tag(name, *args); end
+  #def uploader_field_tag(name, *args); end
 end

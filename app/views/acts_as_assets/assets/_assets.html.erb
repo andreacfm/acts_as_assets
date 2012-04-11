@@ -1,3 +1,6 @@
 <div class="last" id="<%= asset_id %>">
     <%= render :partial => 'acts_as_assets/assets/asset', :collection => assets %>
 </div>
+<script type="text/javascript">
+    $(function () { $("a.zoom").fancybox(); });
+</script>

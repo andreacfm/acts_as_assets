@@ -48,8 +48,8 @@ module ActsAsAssets::AssetsHelper
     end
   end
 
-  def destroy_link(doc, target, type)
-    link_to(I18n.translate('destroy'), destroy_path(doc, target, type), {:method => :delete, :confirm => 'Sei Sicuro?', :remote => true})
+  def destroy_link(doc)
+    link_to(I18n.translate('destroy'), destroy_path(doc, @target, @type), {:method => :delete, :confirm => 'Sei Sicuro?', :remote => true})
   end
 
   def asset_label

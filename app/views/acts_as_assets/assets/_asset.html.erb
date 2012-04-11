@@ -1,5 +1,13 @@
-<div class="download_destroy_class <%= download_destroy_class %>">
-    <%= link_to asset_file_name(asset), asset_file_path(asset) %>
-    <%= link_to t('destroy'), destroy_file_path(asset), :method => :delete, :confirm => 'Sei Sicuro?', :remote => true %>
-</div>
+<% if asset.displayable? %>
+    <div class="grid_3 document_link image_display">
+        <%= link_to("#{asset.asset.url(:original)}&type=#{URI.encode(@type)}", :class => "zoom", :rel => "immagine_sito") {image_tag("#{asset.asset.url(:thumb)}&type=#{URI.encode(@type)}", :alt => 'Apri Immagine')}%>
+        <div><%= asset.asset.to_file.original_filename %></div>
+        <%= destroy_link(asset) %>
+    </div>
+<% else %>
+    <div class="grid_6 document_link">
+        <%= link_to(asset.asset.to_file.original_filename, "#{asset.asset.url}&type=#{@type}") %>
+        <%= destroy_link(asset) %>
+    </div>
+<% end %>
 <div class="clear"></div>

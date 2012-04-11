@@ -1,5 +1,6 @@
 require "acts_as_assets/paperclip/interpolations"
 require "acts_as_assets/unique_asset"
+require "h5_uploader"
 
 module ActsAsAssets
 
