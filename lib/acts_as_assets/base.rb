@@ -13,6 +13,7 @@ module ActsAsAssets
   end
 
   module ClassMethods
+
     def acts_as_assets *args
       cattr_accessor :foreign_key_name
       cattr_accessor :base_model_name
@@ -26,12 +27,11 @@ module ActsAsAssets
           :url => options.include?(:styles) ? url_with_styles : url_without_styles,
           :path => options.include?(:styles) ? path_with_styles : path_without_styles
       }
+      self.base_model_name = self.to_s.split('::').first.underscore.singularize
+      self.base_model = self.base_model_name.camelize.constantize
+      self.foreign_key_name = (options[:foreign_key] || "#{self.base_model_name}_id").to_sym
 
-      self.foreign_key_name = (options[:foreign_key] || "#{asset_model_name}_id").to_sym
-      self.base_model_name = asset_model_name
-      self.base_model = asset_model_name.camelize.constantize
-
-      belongs_to model_sym, :foreign_key => self.foreign_key_name
+      belongs_to base_model_sym, :foreign_key => self.foreign_key_name
       has_attached_file :asset, paperclip_config.merge(options)
 
       before_create :increment_counter
@@ -39,24 +39,27 @@ module ActsAsAssets
     end
 
     def url_with_styles
-      "/#{asset_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension"
+      "/#{_base_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension"
     end
+
     def url_without_styles
-      "/#{asset_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension"
+      "/#{_base_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension"
     end
+
     def path_with_styles
       ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension"
     end
+
     def path_without_styles
       ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
     end
 
-    def asset_model_name
+    def _base_model_name
       self.to_s.split('::').first.underscore.singularize
     end
 
-    def model_sym
-      asset_model_name.to_sym
+    def base_model_sym
+      _base_model_name.to_sym
     end
 
   end

@@ -19,7 +19,7 @@ class ActsAsAssets::AssetsController < ApplicationController
     @asset = klazz.create(
             :asset => params[:file],
             :asset_content_type => mime_type(params[:file]),
-            klazz.model_sym => @model)
+            klazz.base_model_sym => @model)
 
     respond_to do |format|
       if @asset.valid?
