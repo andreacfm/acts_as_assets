@@ -8,39 +8,14 @@ describe Books::AssetsController do
   let(:target){'target_div'}
 
   context "given a Books::AssetsController controller " do
-
-    describe "root_model_name" do
-      it "should return book" do
-        subject.send(:root_model_name).should eq 'book'
-      end
-    end
-
     describe "destroy_path" do
       before do
-        @book = book
-        @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @dtbd << @asset
-        get :index, :book_id => @book.id, :type => "Assets/TestDoc"
+        @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
+        get :index, :book_id => book.id, :type => "Assets/TestDoc", :multiple => true
       end
+
       it "should return /books/id/assets/asset_id" do
-        subject.send(:destroy_path,@asset, target).should eq "/books/#{@book.id}/assets/#{@asset.id}?target=#{target}"
-      end
-    end
-
-  end
-
-  context "filters" do
-
-    context "assign_root_model" do
-
-      before do
-        @book = book
-        get :index, :book_id => @book.id, :type => "Assets/TestDoc"
-      end
-
-      it "should assign @book" do
-        subject.assign_to(:book)
-        assigns(:book).id.should eq @book.id
+        subject.send(:destroy_path, @asset, book, target, @type).should eq "/books/#{book.id}/assets/#{@asset.id}?target=#{target}"
       end
     end
 
@@ -51,16 +26,13 @@ describe Books::AssetsController do
     context "format html" do
 
       before :each do
-        @book = book
-        @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @dtbd << @asset
+        @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
         get :index, :book_id => book.id, :type => "Assets/TestDoc", :target => target, :format => :html
       end
 
       it "should assign variables" do
         should assign_to(:assets)
         should assign_to(:target)
-        should assign_to(:book)
       end
 
       it{should respond_with(:success)}
@@ -68,6 +40,7 @@ describe Books::AssetsController do
       it{should render_template('acts_as_assets/assets/index')}
 
       it "should return the correct formatted view" do
+        pending "TODO port the tag "
         response.body.should match(/#{@asset.asset.to_file.original_filename}/)
       end
 
@@ -76,9 +49,7 @@ describe Books::AssetsController do
     context "format json" do
 
       before :each do
-        @book = book
-        @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @dtbd << @asset
+        @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
         get :index, :book_id => book.id, :type => "Assets/TestDoc", :target => target, :format => :json
       end
 
@@ -95,14 +66,11 @@ describe Books::AssetsController do
   describe "create" do
 
     before do
-      @book = book
-      post :create, :book_id => @book.id, :type => "Assets/TestDoc", :file => jpg_test, :format => "js"
-      @dtbd << assigns(:asset)
+      post :create, :book_id => book.id, :type => "Assets/TestDoc", :file => uploaded_test_asset, :format => "js"
     end
 
     it "should assign variables" do
       should assign_to(:asset)
-      should assign_to(:book)
     end
 
     it "should save the correct content_type" do
@@ -124,20 +92,16 @@ describe Books::AssetsController do
   describe "destroy" do
 
     before :each do
-      @book = book
-      @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-      @dtbd << @asset
-      delete :destroy, :book_id => @book.id, :asset_id => @asset.id, :format => "js", :target => target
+      @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
+      delete :destroy, :book_id => book.id, :type => "Assets/TestDoc", :asset_id => @asset.id, :format => "js", :target => target
     end
 
     it "should assign variables" do
       should assign_to(:asset)
       should assign_to(:target)
-      should assign_to(:book)
     end
 
-    it "should be success returning the correct content type and a json string reporting succes == true" do
-      ActiveSupport::JSON.decode(response.body)["success"].should be_true
+    it "should be success returning the correct content type" do
       should respond_with_content_type(:js)
       should respond_with(:success)
     end
@@ -154,10 +118,8 @@ describe Books::AssetsController do
 
     describe "sending existing file without style" do
       before  do
-        @book = book
-        @asset = Books::Assets::TestDoc.create!(:book => @book, :asset => jpg_test)
-        @dtbd << @asset
-        get :get, :book_id => @book.id, :asset_id => @asset.id
+        @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
+        get :get, :book_id => book.id, :asset_id => @asset.id, :type => "Assets/TestDoc"
       end
 
       it "should stream the asset" do
@@ -170,10 +132,8 @@ describe Books::AssetsController do
 
     describe "sending existing file with a required style" do
       before  do
-        @book = book
-        @asset = Books::Assets::TestImage.create! :asset => jpg_test, :book => @book
-        @dtbd << @asset
-        get :get, :book_id => @book.id, :asset_id => @asset.id, :style => "thumb"
+        @asset = Books::Assets::TestImage.create!(:asset => uploaded_test_asset, :book => book)
+        get :get, :book_id => book.id, :asset_id => @asset.id, :style => "thumb", :type => "Assets/TestImage"
       end
 
       it "should assign path" do
@@ -182,31 +142,25 @@ describe Books::AssetsController do
       end
 
       it "should stream the asset" do
-        should respond_with(:success)
+        response.should be_success
         should respond_with_content_type("image/jpeg")
-        open("spec/temp/test.jpg", "wb") { |file|
+        dir = "#{File.dirname(__FILE__)}/../temp"
+        open("#{dir}/test.jpg", "wb") { |file|
           file.write(response.body)
         }
-        Paperclip::Geometry.from_file(File.expand_path("spec/temp/test.jpg")).to_s.should match /64/
+        Paperclip::Geometry.from_file(File.expand_path("#{dir}/test.jpg")).to_s.should match /64/
       end
 
     end
 
-    describe "when requiring a file that does not exixts" do
+    describe "when requiring a file that does not exists" do
       before  do
-        @book = book
-        get :get, :book_id => @book.id, :asset_id => 123456789
+        get :get, :book_id => book.id, :asset_id => 123456789,:type => "Assets/TestDoc"
       end
 
       it "should return 404 and attempt to render custom rails 404.html static file" do
         should respond_with(404)
       end
-
     end
-
   end
-
-
-
-
 end

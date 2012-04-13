@@ -1,0 +1,9 @@
+<%# encoding: utf-8 %>
+<% assets ||= @assets %>
+<div id="<%=asset_id%>" class="multiple assets">
+<% if Array(assets).empty? %>
+    <%= render :partial => "acts_as_assets/assets/upload_link", :locals => {:multiple => false, :model => model} %>
+<% else %>
+    <%= render :partial => "acts_as_assets/assets/assets", :locals => {:assets => Array(assets), :model => model} %>
+<% end %>
+</div>

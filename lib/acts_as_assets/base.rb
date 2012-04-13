@@ -1,71 +1,110 @@
 require "acts_as_assets/paperclip/interpolations"
 require "acts_as_assets/unique_asset"
+require "h5_uploader"
 
 module ActsAsAssets
 
   module Base
+    extend ActiveSupport::Concern
 
-    def self.included base
-      base.class_eval do
-        extend ClassMethods
-      end
+    included do
+      extend ClassMethods
     end
-
   end
 
   module ClassMethods
 
     def acts_as_assets *args
+      cattr_accessor :foreign_key_name
+      cattr_accessor :base_model_name
+      cattr_accessor :base_model
+
       include InstanceMethods
-      belongs_to root_model
 
       options = args.extract_options!
+
       paperclip_config = {
-          :url => options.include?(:styles) ?
-              "/#{root_model.to_s.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension" :
-              "/#{root_model.to_s.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension",
-          :path => options.include?(:styles) ? ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension" : ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
+          :url => options.include?(:styles) ? url_with_styles : url_without_styles,
+          :path => options.include?(:styles) ? path_with_styles : path_without_styles
       }
+      self.base_model_name = self.to_s.split('::').first.underscore.singularize
+      self.base_model = self.base_model_name.camelize.constantize
+      self.foreign_key_name = (options[:foreign_key] || "#{self.base_model_name}_id").to_sym
+
+      belongs_to base_model_sym, :foreign_key => self.foreign_key_name
       has_attached_file :asset, paperclip_config.merge(options)
-      before_create :touch_counter
+
+      before_create :increment_counter
+
     end
 
-    def root_model
-      ActiveSupport::Inflector.underscore(self.to_s.split('::').first.singularize).to_sym
+    def url_with_styles
+      "/#{_base_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension"
+    end
+
+    def url_without_styles
+      "/#{_base_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension"
+    end
+
+    def path_with_styles
+      ":acts_as_assets_file_path/:style/:acts_as_assets_file_name.:extension"
+    end
+
+    def path_without_styles
+      ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
+    end
+
+    def _base_model_name
+      self.to_s.split('::').first.underscore.singularize
+    end
+
+    def base_model_sym
+      _base_model_name.to_sym
     end
 
   end
 
   module InstanceMethods
-
     def acting_as_assets?
       true
     end
 
-    private
-
-    def touch_counter
-      max = self.class.maximum(:counter, :conditions => {"#{self.class.root_model}_id".to_sym => self.send("#{self.class.root_model}_id".to_sym)})
-      self.counter = max.nil? ? 1 : max+1
+    def multiple?
+      true
     end
 
-    def root_id
-      send(self.class.root_model).id
+    private
+    def increment_counter
+      self.counter = number_of_file_for_type + 1
+    end
+
+    def number_of_file_for_type
+      self.class.maximum(:counter, :conditions => {self.foreign_key_name => self.send(self.foreign_key_name)}).to_i
+    end
+
+    def foreign_key_value
+      self.send(foreign_key_name)
     end
 
     def acts_as_assets_file_path
-      a = ActiveSupport::Inflector.underscore(self.type).split('/').prepend "public", "system"
-      a.pop
-      root_model_index = a.index(self.class.root_model.to_s.pluralize)
-      a.insert root_model_index + 1,root_id
-      a.join '/'
+      absolute_directory_for_asset_as_array.insert(3, foreign_key_value).join('/')
     end
 
     def acts_as_assets_file_name
-      a = ActiveSupport::Inflector.underscore(self.type).split('/')
-      self.counter > 1 ? "#{a.last}_#{counter}" : a.last
+      self.counter > 1 ? "#{_file_name}_#{counter}" : _file_name
     end
 
+    def _file_name
+      relative_directory_for_asset_as_array.last
+    end
+
+    def relative_directory_for_asset_as_array
+      self.type.underscore.split('/')
+    end
+
+    def absolute_directory_for_asset_as_array
+      relative_directory_for_asset_as_array.unshift("public", "system").instance_eval { pop; self }
+    end
   end
 
 end

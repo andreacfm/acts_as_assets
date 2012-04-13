@@ -13,18 +13,4 @@
 
 ActiveRecord::Schema.define(:version => 0) do
 
-  create_table "books", :force => true do |t|
-    t.string "title"
-  end
-
-  create_table "books_assets", :force => true do |t|
-    t.string   "asset_file_name"
-    t.string   "asset_content_type"
-    t.integer  "asset_file_size"
-    t.datetime "asset_updated_at"
-    t.string   "type"
-    t.integer  "counter",            :default => 0, :null => false
-    t.integer  "book_id"
-  end
-
 end

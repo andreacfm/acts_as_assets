@@ -1,0 +1,6 @@
+<ul>
+    <%= render :partial => 'acts_as_assets/assets/asset', :collection => assets, :locals => {:model => model} %>
+</ul>
+<script type="text/javascript">
+    $(function () { $("a.zoom").fancybox(); });
+</script>

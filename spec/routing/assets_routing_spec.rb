@@ -21,3 +21,9 @@ describe Books::AssetsController do
                  :controller => "books/assets", :action => :get, :book_id => 1, :asset_id => 20, :filename => "filename", :extension => "gif")}
 
 end
+
+describe TipiPannello::AssetsController do
+  it {should route(:delete,'tipi_pannello/il_mio_tipo/assets/20.js').to(
+                 :controller => "tipi_pannello/assets", :action => :destroy, :tipo_pannello_name=> 'il_mio_tipo', :format => 'js', :asset_id => 20)}
+
+end

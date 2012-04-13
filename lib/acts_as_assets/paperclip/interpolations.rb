@@ -1,7 +1,7 @@
 require 'paperclip'
 
 Paperclip.interpolates :acts_as_assets_root_id do |doc, style|
-  doc.instance.send(:root_id)
+  doc.instance.send(:foreign_key_value)
 end
 
 Paperclip.interpolates :acts_as_assets_file_path do |doc, style|
