@@ -1,2 +1,4 @@
-class Chapters::AssetsController < ActsAsAssets::AssetsController
+module Chapters
+  class AssetsController < ActsAsAssets::AssetsController
+  end
 end
