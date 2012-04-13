@@ -7,10 +7,6 @@ class ActsAsAssets::AssetsController < ApplicationController
   before_filter :load_assets, :only => [:index, :destroy]
 
   def index
-    puts "klazz.base_model: #{klazz.base_model}"
-    puts "klazz.foreign_key_name: #{klazz.foreign_key_name}"
-    puts "params[klazz.foreign_key_name]: #{params[klazz.foreign_key_name]}"
-    puts "klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name])): #{klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))}"
     @model = klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))
     respond_to do |format|
       format.html { render :layout => false }
