@@ -1,6 +1,6 @@
 module ActsAsAssets::AssetsHelper
-  def destroy_path(asset, target, type)
-    send(destroy_method_for(asset), @model, {:asset_id => asset.id, :target => target, :type => type})
+  def destroy_path(asset, model, target, type)
+    send(destroy_method_for(asset), model, {:asset_id => asset.id, :target => target, :type => type})
   end
 
   def destroy_method_for(asset)
@@ -23,8 +23,12 @@ module ActsAsAssets::AssetsHelper
     self.send(method_name, model, :type => @type, :format => :js)
   end
 
-  def destroy_link(doc)
-    link_to(I18n.translate('destroy'), destroy_path(doc, @target, @type), {:method => :delete, :confirm => 'Sei Sicuro?', :remote => true})
+  def destroy_file_path(asset, model)
+    destroy_path(asset, model, asset_target, @type)
+  end
+
+  def destroy_link(asset, model)
+    link_to(I18n.translate('destroy'), destroy_file_path(asset, model), {:method => :delete, :confirm => 'Sei Sicuro?', :remote => true})
   end
 
   def asset_label
@@ -41,11 +45,8 @@ module ActsAsAssets::AssetsHelper
   def asset_file_path(asset)
     asset.asset.url
   end
-  def destroy_file_path(asset)
-    destroy_path(asset, asset_target, @type)
-  end
 
   def assets_body
-    j render(:partial => 'acts_as_assets/assets/asset', :collection => @assets)
+    j render(:partial => @asset_partial, :locals => {:assets => Array(@assets), :model => @model})
   end
 end

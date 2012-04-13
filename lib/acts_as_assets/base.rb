@@ -69,6 +69,10 @@ module ActsAsAssets
       true
     end
 
+    def multiple?
+      true
+    end
+
     private
     def increment_counter
       self.counter = number_of_file_for_type + 1

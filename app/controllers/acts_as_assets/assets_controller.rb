@@ -7,6 +7,10 @@ class ActsAsAssets::AssetsController < ApplicationController
   before_filter :load_assets, :only => [:index, :destroy]
 
   def index
+    puts "klazz.base_model: #{klazz.base_model}"
+    puts "klazz.foreign_key_name: #{klazz.foreign_key_name}"
+    puts "params[klazz.foreign_key_name]: #{params[klazz.foreign_key_name]}"
+    puts "klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name])): #{klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))}"
     @model = klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))
     respond_to do |format|
       format.html { render :layout => false }
@@ -21,6 +25,7 @@ class ActsAsAssets::AssetsController < ApplicationController
             :asset_content_type => mime_type(params[:file]),
             klazz.base_model_sym => @model)
 
+    @asset_partial = partial_to_use(@asset)
     respond_to do |format|
       if @asset.valid?
         load_assets
@@ -33,7 +38,9 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def destroy
     begin
+      @model = klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))
       @asset = klazz.find_by_id(params[:asset_id])
+      @asset_partial = partial_to_use(@asset)
       @asset.destroy
     rescue Exception => e
       error = e.message
@@ -63,6 +70,10 @@ class ActsAsAssets::AssetsController < ApplicationController
   private
   def file_to_download_path
     @path = params[:style].nil? ? @asset.asset.path : @asset.asset.path(params[:style])
+  end
+
+  def partial_to_use(asset)
+    asset.multiple? ? "acts_as_assets/assets/asset_multiple_upload" : "acts_as_assets/assets/asset_upload"
   end
 
   def load_assets
