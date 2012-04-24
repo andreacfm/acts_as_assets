@@ -7,7 +7,7 @@ require "acts_as_assets/version"
 Gem::Specification.new do |s|
   s.name        = "acts_as_assets"
   s.version     = ActsAsAssets::VERSION
-  s.authors     = ["Andrea Campolonghi"]
+  s.authors     = ["Andrea Campolonghi", "giancarlo.pace@gmail.com"]
   s.email       = ["acampolonghi@gmail.com"]
   s.homepage    = ""
   s.summary     = "Assets management"

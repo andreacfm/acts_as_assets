@@ -104,7 +104,7 @@ describe "ActsAsAssets" do
         end
         it "should interpolate the correct url for a subclass instance" do
           doc = Books::Assets::TestDoc.create! :asset => uploaded_test_asset, :book => book
-          doc.asset.url.should match /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/#{doc.asset.to_file.original_filename}/
+          doc.asset.url.should match /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/#{File.basename(doc.asset.path)}/
         end
         it "should interpolate the correct path for a subclass instance" do
           chapter = Chapters::Assets::Paragraph.create!(:chapter => chap, :asset => uploaded_test_asset)
@@ -139,9 +139,9 @@ describe "ActsAsAssets" do
       end
       it "should have style param in the url" do
         doc = Books::Assets::TestImage.create! :asset => uploaded_test_asset, :book => book
-        doc.asset.url(:thumb).should match  /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/thumb\/#{doc.asset.to_file.original_filename}/
-        doc.asset.url(:medium).should match  /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/medium\/#{doc.asset.to_file.original_filename}/
-        doc.asset.url(:original).should match  /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/original\/#{doc.asset.to_file.original_filename}/
+        doc.asset.url(:thumb).should match  /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/thumb\/#{File.basename(doc.asset.path)}/
+        doc.asset.url(:medium).should match  /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/medium\/#{File.basename(doc.asset.path)}/
+        doc.asset.url(:original).should match  /\/books\/#{book.id}\/assets\/get\/#{doc.id}\/original\/#{File.basename(doc.asset.path)}/
       end
 
     end

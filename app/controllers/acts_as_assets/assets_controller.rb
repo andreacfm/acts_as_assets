@@ -56,7 +56,7 @@ class ActsAsAssets::AssetsController < ApplicationController
     begin
       @asset = klazz.find(params[:asset_id])
 
-      send_file(file_to_download_path, {:filename => @asset.asset.to_file.original_filename, :content_type => @asset.asset_content_type, :disposition => 'inline'})
+      send_file(file_to_download_path, {:filename => File.basename(@asset.asset.path), :content_type => @asset.asset_content_type, :disposition => 'inline'})
 
     rescue ActiveRecord::RecordNotFound
       respond_with_404
