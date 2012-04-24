@@ -40,7 +40,7 @@ module ActsAsAssets::AssetsHelper
   end
 
   def asset_file_name(asset)
-    asset.asset.to_file.original_filename
+    File.basename(asset.asset.path)
   end
   def asset_file_path(asset)
     asset.asset.url

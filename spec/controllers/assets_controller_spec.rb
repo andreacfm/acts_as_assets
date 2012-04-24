@@ -41,7 +41,7 @@ describe Books::AssetsController do
 
       it "should return the correct formatted view" do
         pending "TODO port the tag "
-        response.body.should match(/#{@asset.asset.to_file.original_filename}/)
+        response.body.should match(/#{File.basename(@asset.asset.path)}/)
       end
 
     end
@@ -125,7 +125,7 @@ describe Books::AssetsController do
       it "should stream the asset" do
         should respond_with(:success)
         should respond_with_content_type("image/jpeg")
-        response.headers.to_s.should match /#{assigns(:asset).asset.to_file.original_filename}/
+        response.headers.to_s.should match /#{File.basename(assigns(:asset).asset.path)}/
       end
 
     end
