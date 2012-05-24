@@ -7,7 +7,7 @@ class ActsAsAssets::AssetsController < ApplicationController
   before_filter :load_assets, :only => [:index, :destroy]
 
   def index
-    @model = klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))
+    @model = assets_base_model
     respond_to do |format|
       format.html { render :layout => false }
       format.json { render :json => @assets }
@@ -15,7 +15,7 @@ class ActsAsAssets::AssetsController < ApplicationController
   end
 
   def create
-    @model = klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))
+    @model = assets_base_model
     @asset = klazz.create(
             :asset => params[:file],
             :asset_content_type => mime_type(params[:file]),
@@ -34,7 +34,7 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def destroy
     begin
-      @model = klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))
+      @model = assets_base_model
       @asset = klazz.find_by_id(params[:asset_id])
       @asset_partial = partial_to_use(@asset)
       @asset.destroy
@@ -55,15 +55,17 @@ class ActsAsAssets::AssetsController < ApplicationController
   def get
     begin
       @asset = klazz.find(params[:asset_id])
-
       send_file(file_to_download_path, {:filename => File.basename(@asset.asset.path), :content_type => @asset.asset_content_type, :disposition => 'inline'})
-
     rescue ActiveRecord::RecordNotFound
       respond_with_404
     end
   end
 
   private
+  def assets_base_model
+    klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))
+  end
+
   def file_to_download_path
     @path = params[:style].nil? ? @asset.asset.path : @asset.asset.path(params[:style])
   end
