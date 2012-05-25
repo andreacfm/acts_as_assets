@@ -47,6 +47,6 @@ module ActsAsAssets::AssetsHelper
   end
 
   def assets_body
-    j render(:partial => @asset_partial, :locals => {:assets => Array(@assets), :model => @model})
+    j render(:partial => @asset_partial, :locals => {:assets => Array(@assets), :model => @model, read_only: false})
   end
 end
