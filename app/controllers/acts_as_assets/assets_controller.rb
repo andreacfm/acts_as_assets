@@ -82,7 +82,7 @@ class ActsAsAssets::AssetsController < ApplicationController
   # takes a type params string like "my/asset/type_of_documento"
   # and convert into My::Asset::TypeOfDocument constant
   def klazz
-    @type.camelize.constantize
+    params[:type].camelize.constantize
   end
 
   def assign_target
