@@ -6,7 +6,7 @@ end
 module Chapters
   class Asset < ActiveRecord::Base
     self.table_name = "chapters_assets"
-    acts_as_assets :foreign_key => "chapter_name"
+    acts_as_assets base_model: :chapter, :foreign_key => :chapter_name
   end
 end
 module Chapters

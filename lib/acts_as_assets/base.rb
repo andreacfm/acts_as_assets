@@ -24,24 +24,22 @@ module ActsAsAssets
       include InstanceMethods
 
       options = args.extract_options!
-      raise "Class #{self} must specify a :download_prefix option" if options[:download_prefix].nil?
-
-      paperclip_config = {
-          :url => options.include?(:styles) ? url_with_styles(options[:download_prefix]) : url_without_styles(options[:download_prefix]),
-          :path => options.include?(:styles) ? path_with_styles : path_without_styles
-      }
 
       raise "Class #{self} must specify a :base_model option" if options[:base_model].nil?
 
-      self.base_model = options[:base_model].camelize.constantize
-      self.base_model_name = self.base_model.to_s.underscore
-      self.base_model_sym = self.base_model_name.gsub(/\//, '_').to_sym
-      self.foreign_key_name = (options[:foreign_key] || "#{self.base_model_name}_id").to_sym
-      self.download_prefix = options[:download_prefix]
+      self.base_model = options[:base_model].to_s.camelize.constantize
+      self.base_model_name = base_model.to_s.underscore
+      self.base_model_sym = base_model_name.gsub(/\//, '_').to_sym
+      self.foreign_key_name = (options[:foreign_key] || "#{base_model_name}_id").to_sym
+      self.download_prefix = options[:download_prefix] || base_model_name.to_s.pluralize
 
-      puts "self.base_model_name: #{self.base_model_sym} belongs_to #{self.base_model_sym}, :foreign_key => #{self.foreign_key_name}, class_name: #{self.base_model.to_s}"
+      belongs_to base_model_sym, foreign_key: foreign_key_name, class_name: base_model.to_s
 
-      belongs_to self.base_model_sym, foreign_key: self.foreign_key_name, class_name: self.base_model.to_s
+      paperclip_config = {
+          :url => options.include?(:styles) ? url_with_styles(download_prefix) : url_without_styles(download_prefix),
+          :path => options.include?(:styles) ? path_with_styles : path_without_styles
+      }
+
       has_attached_file :asset, paperclip_config.merge(options)
 
       before_create :increment_counter

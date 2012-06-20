@@ -11,7 +11,7 @@ describe Books::AssetsController do
     describe "destroy_path" do
       before do
         @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
-        get :index, :book_id => book.id, :type => "Assets/TestDoc", :multiple => true
+        get :index, :fk_name => book.id, :type => "books/assets/test_doc", :multiple => true
       end
 
       it "should return /books/id/assets/asset_id" do
@@ -24,10 +24,11 @@ describe Books::AssetsController do
   describe "index" do
 
     context "format html" do
+      render_views
 
       before :each do
         @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
-        get :index, :book_id => book.id, :type => "Assets/TestDoc", :target => target, :format => :html
+        get :index, fk_name: book.id, type: "books/assets/test_doc", target: target, format: :html
       end
 
       it "should assign variables" do
@@ -39,18 +40,13 @@ describe Books::AssetsController do
 
       it{should render_template('acts_as_assets/assets/index')}
 
-      it "should return the correct formatted view" do
-        pending "TODO port the tag "
-        response.body.should match(/#{File.basename(@asset.asset.path)}/)
-      end
-
     end
 
     context "format json" do
 
       before :each do
         @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
-        get :index, :book_id => book.id, :type => "Assets/TestDoc", :target => target, :format => :json
+        get :index, :fk_name  => book.id, :type => "books/assets/test_doc", :target => target, :format => :json
       end
 
       it{should_not render_template('acts_as_assets/assets/index')}
@@ -66,7 +62,7 @@ describe Books::AssetsController do
   describe "create" do
 
     before do
-      post :create, :book_id => book.id, :type => "Assets/TestDoc", :file => uploaded_test_asset, :format => "js"
+      post :create, :fk_name  => book.id, :type => "books/assets/test_doc", :file => uploaded_test_asset, :format => "js"
     end
 
     it "should assign variables" do
@@ -93,7 +89,7 @@ describe Books::AssetsController do
 
     before :each do
       @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
-      delete :destroy, :book_id => book.id, :type => "Assets/TestDoc", :asset_id => @asset.id, :format => "js", :target => target
+      delete :destroy, :fk_name  => book.id, :type => "books/assets/test_doc", :asset_id => @asset.id, :format => "js", :target => target, filename: 'pippo', extension: 'jpg'
     end
 
     it "should assign variables" do
@@ -119,7 +115,7 @@ describe Books::AssetsController do
     describe "sending existing file without style" do
       before  do
         @asset = Books::Assets::TestDoc.create!(:book => book, :asset => uploaded_test_asset)
-        get :get, :book_id => book.id, :asset_id => @asset.id, :type => "Assets/TestDoc"
+        get :get, fk_name: book.id, asset_id: @asset.id, :type => "books/assets/test_doc", filename: 'pippo', extension: 'jpg'
       end
 
       it "should stream the asset" do
@@ -133,7 +129,7 @@ describe Books::AssetsController do
     describe "sending existing file with a required style" do
       before  do
         @asset = Books::Assets::TestImage.create!(:asset => uploaded_test_asset, :book => book)
-        get :get, :book_id => book.id, :asset_id => @asset.id, :style => "thumb", :type => "Assets/TestImage"
+        get :get, :fk_name  => book.id, :asset_id => @asset.id, :style => "thumb", :type => "books/assets/test_image", filename: 'pippo', extension: 'jpg'
       end
 
       it "should assign path" do
@@ -155,7 +151,7 @@ describe Books::AssetsController do
 
     describe "when requiring a file that does not exists" do
       before  do
-        get :get, :book_id => book.id, :asset_id => 123456789,:type => "Assets/TestDoc"
+        get :get, :fk_name  => book.id, :asset_id => 123456789, :type => "books/assets/test_doc", filename: 'pippo', extension: 'jpg'
       end
 
       it "should return 404 and attempt to render custom rails 404.html static file" do

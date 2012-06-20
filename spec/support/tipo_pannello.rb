@@ -9,7 +9,7 @@ end
 module TipiPannello
   class Asset < ActiveRecord::Base
     self.table_name_prefix = :rt_tipi_pannello_
-    acts_as_assets :foreign_key => :tipo_pannello_name
+    acts_as_assets base_model: :tipo_pannello, foreign_key: :tipo_pannello_name
   end
 end
 

@@ -5,7 +5,7 @@ end
 module Books
   class Asset < ActiveRecord::Base
     self.table_name = "books_assets"
-    acts_as_assets
+    acts_as_assets base_model: :book
   end
 end
 
@@ -27,7 +27,7 @@ end
 module Books
   class Image < ActiveRecord::Base
     self.table_name = "books_assets"
-    acts_as_assets :styles => {:thumb => "64x64", :medium => "128x128", :original => "800x600<"}
+    acts_as_assets base_model: :book,:styles => {:thumb => "64x64", :medium => "128x128", :original => "800x600<"}
   end
 end
 

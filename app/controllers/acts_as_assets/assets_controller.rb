@@ -75,13 +75,14 @@ class ActsAsAssets::AssetsController < ApplicationController
   end
 
   def load_assets
+    raise "A param :fk_name with the value of the base_model id must be provided. Check the routes.\n#{params}" if params[:fk_name].nil?
     @assets = klazz.where(klazz.foreign_key_name => CGI.unescape(params[:fk_name]))
   end
 
   # takes a type params string like "my/asset/type_of_documento"
   # and convert into My::Asset::TypeOfDocument constant
   def klazz
-    params[:type].camelize.constantize
+    @type.camelize.constantize
   end
 
   def assign_target
@@ -100,7 +101,7 @@ class ActsAsAssets::AssetsController < ApplicationController
 
 
   def respond_with_404
-    render :file => "#{Rails.root}/public/404.html", :status => :not_found
+    render :file => "#{Rails.root}/public/404", :status => :not_found, format: :html
   end
 
 end
