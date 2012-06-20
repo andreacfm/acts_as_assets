@@ -18,32 +18,42 @@ module ActsAsAssets
       cattr_accessor :foreign_key_name
       cattr_accessor :base_model_name
       cattr_accessor :base_model
+      cattr_accessor :download_prefix
+      cattr_accessor :base_model_sym
 
       include InstanceMethods
 
       options = args.extract_options!
+      raise "Class #{self} must specify a :download_prefix option" if options[:download_prefix].nil?
 
       paperclip_config = {
-          :url => options.include?(:styles) ? url_with_styles : url_without_styles,
+          :url => options.include?(:styles) ? url_with_styles(options[:download_prefix]) : url_without_styles(options[:download_prefix]),
           :path => options.include?(:styles) ? path_with_styles : path_without_styles
       }
-      self.base_model_name = self.to_s.split('::').first.underscore.singularize
-      self.base_model = self.base_model_name.camelize.constantize
-      self.foreign_key_name = (options[:foreign_key] || "#{self.base_model_name}_id").to_sym
 
-      belongs_to base_model_sym, :foreign_key => self.foreign_key_name
+      raise "Class #{self} must specify a :base_model option" if options[:base_model].nil?
+
+      self.base_model = options[:base_model].camelize.constantize
+      self.base_model_name = self.base_model.to_s.underscore
+      self.base_model_sym = self.base_model_name.gsub(/\//, '_').to_sym
+      self.foreign_key_name = (options[:foreign_key] || "#{self.base_model_name}_id").to_sym
+      self.download_prefix = options[:download_prefix]
+
+      puts "self.base_model_name: #{self.base_model_sym} belongs_to #{self.base_model_sym}, :foreign_key => #{self.foreign_key_name}, class_name: #{self.base_model.to_s}"
+
+      belongs_to self.base_model_sym, foreign_key: self.foreign_key_name, class_name: self.base_model.to_s
       has_attached_file :asset, paperclip_config.merge(options)
 
       before_create :increment_counter
 
     end
 
-    def url_with_styles
-      "/#{_base_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension"
+    def url_with_styles(download_prefix)
+      "/#{download_prefix}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension"
     end
 
-    def url_without_styles
-      "/#{_base_model_name.pluralize}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension"
+    def url_without_styles(download_prefix)
+      "/#{download_prefix}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension"
     end
 
     def path_with_styles
@@ -52,14 +62,6 @@ module ActsAsAssets
 
     def path_without_styles
       ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
-    end
-
-    def _base_model_name
-      self.to_s.split('::').first.underscore.singularize
-    end
-
-    def base_model_sym
-      _base_model_name.to_sym
     end
 
   end

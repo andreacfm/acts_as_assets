@@ -33,7 +33,7 @@ describe "ActsAsAssets" do
       end
 
       describe "model_sym" do
-        specify { subject.class.base_model_sym.should eq :book }
+        specify { subject.class.base_model.to_sym.should eq :book }
       end
 
       describe "acts_as_assets_file_name" do

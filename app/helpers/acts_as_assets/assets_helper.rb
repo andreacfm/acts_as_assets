@@ -8,7 +8,7 @@ module ActsAsAssets::AssetsHelper
   end
 
   def name_from(asset)
-    asset.class.base_model_name
+    asset.class.base_model_sym
   end
 
   def asset_target
@@ -19,7 +19,8 @@ module ActsAsAssets::AssetsHelper
     "function(id, fileName, responseJSON, qq){K.allegati.onComplete(id, fileName, responseJSON, qq,'#{asset_target}');}"
   end
   def asset_action(model)
-    method_name = "#{model.class.model_name.split('::').first.underscore.singularize}_create_asset_path".to_sym
+    prefix = model.to_model.class.to_s.underscore.gsub(/\//, '_')
+    method_name = "#{prefix}_create_asset_path".to_sym
     self.send(method_name, model, :type => @type, :format => :js)
   end
 

@@ -16,11 +16,10 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def create
     @model = assets_base_model
-    @asset = klazz.create(
-            :asset => params[:file],
-            :asset_content_type => mime_type(params[:file]),
-            klazz.base_model_sym => @model)
-
+    @asset = klazz.create(:asset => params[:file],
+                          :asset_content_type => mime_type(params[:file]),
+                          klazz.base_model_sym => @model)
+    @download_prefix = klazz.download_prefix
     @asset_partial = partial_to_use(@asset)
     respond_to do |format|
       if @asset.valid?
@@ -35,6 +34,7 @@ class ActsAsAssets::AssetsController < ApplicationController
   def destroy
     begin
       @model = assets_base_model
+      @download_prefix = klazz.download_prefix
       @asset = klazz.find_by_id(params[:asset_id])
       @asset_partial = partial_to_use(@asset)
       @asset.destroy
@@ -61,11 +61,11 @@ class ActsAsAssets::AssetsController < ApplicationController
     end
   end
 
-  private
+  protected
   def assets_base_model
-    klazz.base_model.find(CGI.unescape(params[klazz.foreign_key_name]))
+    klazz.base_model.find(CGI.unescape(params[:fk_name]))
   end
-
+  private
   def file_to_download_path
     @path = params[:style].nil? ? @asset.asset.path : @asset.asset.path(params[:style])
   end
@@ -75,16 +75,13 @@ class ActsAsAssets::AssetsController < ApplicationController
   end
 
   def load_assets
-    @assets = klazz.where(klazz.foreign_key_name => CGI.unescape(params[klazz.foreign_key_name]))
+    @assets = klazz.where(klazz.foreign_key_name => CGI.unescape(params[:fk_name]))
   end
 
+  # takes a type params string like "my/asset/type_of_documento"
+  # and convert into My::Asset::TypeOfDocument constant
   def klazz
-    ([self.class.to_s.split('::').first] << camelize_type).join('::').constantize
-  end
-
-  ## takes a type params string like "my/asset/type_of_documento" and convert into [My,Asset,TypeOfDocument]
-  def camelize_type
-    params[:type].split('/').map { |i| i.camelize }.flatten
+    params[:type].camelize.constantize
   end
 
   def assign_target
@@ -97,6 +94,7 @@ class ActsAsAssets::AssetsController < ApplicationController
 
   def load_type
     raise ":type of asset is mandatory and not specified" unless params[:type]
+
     @type = params[:type]
   end
 

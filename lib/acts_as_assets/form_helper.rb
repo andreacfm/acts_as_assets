@@ -4,9 +4,11 @@ module ActionView
       def asset_upload(method, type, *args)
         @template.asset_upload_tag(@object, method, type, *args)
       end
+
       def asset_multiple_upload(method, type, *args)
         @template.asset_multiple_upload_tag(@object, method, type, *args)
       end
+
       def asset_label(method, type)
         @template.asset_label_tag(@object, method, type)
       end
@@ -31,12 +33,14 @@ module ActionView
       # asset_upload_tag(@pratica, [:back_office, :allegati], ...)
       # will call @pratica.back_office.allegati
       def asset_upload_helper(model, methods, type, partial, options)
-        render :partial => partial,
-               :locals => {:@type => type, :model => model, :assets => model_assets(methods, model), read_only: options[:read_only]}
+        render partial: partial,
+               locals: {:@type => type, model: model, assets: model_assets(methods, model),
+                        association: Array(methods).last,
+                        read_only: options[:read_only]}
       end
 
       def model_assets(methods, model)
-        Array(methods).inject(model) {|object, method| object.send(method) }
+        Array(methods).inject(model) { |object, method| object.send(method) }
       end
 
     end
