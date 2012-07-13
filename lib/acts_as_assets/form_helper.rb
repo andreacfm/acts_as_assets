@@ -17,6 +17,8 @@ module ActionView
     module FormTagHelper
       def asset_multiple_upload_tag(model, methods, *args)
         options = args.extract_options!
+        type = nil
+        type = args.first if args.size == 2
         asset_upload_helper(model, methods, type, "acts_as_assets/assets/asset_multiple_upload", options)
       end
 
