@@ -25,7 +25,7 @@ describe "ActsAsAssets" do
           subject.class.attachment_definitions[:asset].should_not include(:styles)
         end
         it "should include correct url" do
-          subject.class.attachment_definitions[:asset][:url].should == "/books/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension"
+          subject.class.attachment_definitions[:asset][:url].should == "/books/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension?type=:acts_as_assets_type"
         end
         it "should include correct path" do
           subject.class.attachment_definitions[:asset][:path].should == ":acts_as_assets_file_path/:acts_as_assets_file_name.:extension"
@@ -70,6 +70,10 @@ describe "ActsAsAssets" do
           subject.save!
           subject.send(:foreign_key_value).should eq book.id
         end
+      end
+
+      describe "#acts_as_assets_type" do
+        specify { subject.send(:acts_as_assets_type).should eq  "books/assets/test_doc" }
       end
 
       describe "touch_counter" do

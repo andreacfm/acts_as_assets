@@ -47,11 +47,11 @@ module ActsAsAssets
     end
 
     def url_with_styles(download_prefix)
-      "/#{download_prefix}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension"
+      "/#{download_prefix}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:style/:acts_as_assets_file_name.:extension?type=:acts_as_assets_type"
     end
 
     def url_without_styles(download_prefix)
-      "/#{download_prefix}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension"
+      "/#{download_prefix}/:acts_as_assets_root_id/assets/get/:acts_as_assets_asset_id/:acts_as_assets_file_name.:extension?type=:acts_as_assets_type"
     end
 
     def path_with_styles
@@ -94,6 +94,10 @@ module ActsAsAssets
       self.counter > 1 ? "#{_file_name}_#{counter}" : _file_name
     end
 
+    def acts_as_assets_type
+      URI.encode(self.class.to_s.underscore)
+    end
+
     def _file_name
       relative_directory_for_asset_as_array.last
     end
@@ -105,6 +109,8 @@ module ActsAsAssets
     def absolute_directory_for_asset_as_array
       relative_directory_for_asset_as_array.unshift("public", "system").instance_eval { pop; self }
     end
+
+
   end
 
 end
