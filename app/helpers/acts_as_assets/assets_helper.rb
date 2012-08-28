@@ -4,11 +4,11 @@ module ActsAsAssets::AssetsHelper
     end
 
   def destroy_file_path(asset, model)
-    destroy_path(asset, model, asset_target, @type)
+    destroy_path(asset, model, asset_target(model), @type)
   end
 
-  def asset_target
-    @type.gsub(/\//, '_')
+  def asset_target model
+    @type.gsub(/\//, '_') + "_#{model.id}"
   end
 
   def destroy_path(asset, model, target, type)
@@ -39,8 +39,8 @@ module ActsAsAssets::AssetsHelper
     defined?(type_label).nil? ? @type.split('/').last.to_s.humanize : type_label
   end
 
-  def upload_complete_js_function
-    "function(id, fileName, responseJSON, qq){K.allegati.onComplete(id, fileName, responseJSON, qq,'#{asset_target}');}"
+  def upload_complete_js_function model
+    "function(id, fileName, responseJSON, qq){K.allegati.onComplete(id, fileName, responseJSON, qq,'#{asset_target(model)}');}"
   end
   def asset_action(model)
     prefix = model.to_model.class.to_s.underscore.gsub(/\//, '_')
@@ -48,8 +48,8 @@ module ActsAsAssets::AssetsHelper
     self.send(method_name, model, :type => @type, :format => :js)
   end
 
-  def asset_id
-    asset_target
+  def asset_id model
+    asset_target model
   end
 
   def asset_file_name(asset)

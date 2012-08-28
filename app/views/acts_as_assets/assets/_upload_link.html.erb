@@ -1,6 +1,6 @@
-<%= uploader_field_tag asset_target,
+<%= uploader_field_tag asset_target(model),
                        :action => asset_action(model),
                        :uploadButtonText => t('aggiungi'),
                        :multiple => multiple,
-                       :params => {:authenticity_token => form_authenticity_token, :target => asset_target},
-                       :onComplete => upload_complete_js_function %>
+                       :params => {:authenticity_token => form_authenticity_token, :target => asset_target(model)},
+                       :onComplete => upload_complete_js_function(model) %>
