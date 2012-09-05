@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    acts_as_assets (0.3.6)
+    acts_as_assets (0.3.7)
       h5_uploader
       paperclip
       rails (~> 3.2.1)
