@@ -1,4 +1,4 @@
-class ActsAsAssets::AssetsController < ApplicationController
+class ActsAsAssets::AssetsController < ::ApplicationController
   include ActsAsAssets::AssetsHelper
   helper_method :destroy_path
 
