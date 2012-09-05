@@ -8,7 +8,7 @@ module ActsAsAssets::AssetsHelper
   end
 
   def asset_target model
-    @type.gsub(/\//, '_') + "_#{model.id}"
+    @type.gsub(/\//, '_') + "_#{model.id.to_s.gsub(/\s/, '_')}"
   end
 
   def destroy_path(asset, model, target, type)
