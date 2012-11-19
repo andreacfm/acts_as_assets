@@ -1,6 +1,7 @@
 require "acts_as_assets/paperclip/interpolations"
 require "acts_as_assets/unique_asset"
 require "h5_uploader"
+require "acts_as_assets/routes"
 
 module ActsAsAssets
 
