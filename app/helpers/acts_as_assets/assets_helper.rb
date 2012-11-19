@@ -8,7 +8,7 @@ module ActsAsAssets::AssetsHelper
   end
 
   def asset_target model
-    @type.gsub(/\//, '_') + "_#{model.id}"
+    @type.gsub(/\//, '_') + "_#{model.id.to_s.parameterize('_').gsub(/\-/, '_')}"
   end
 
   def destroy_path(asset, model, target, type)
@@ -40,7 +40,7 @@ module ActsAsAssets::AssetsHelper
   end
 
   def upload_complete_js_function model
-    "function(id, fileName, responseJSON, qq){K.allegati.onComplete(id, fileName, responseJSON, qq,'#{asset_target(model)}');}"
+    "function(id, fileName, responseJSON, qq){K.allegati.onComplete(id, fileName, responseJSON, qq,'#{asset_action(model)}');}"
   end
   def asset_action(model)
     prefix = model.to_model.class.to_s.underscore.gsub(/\//, '_')

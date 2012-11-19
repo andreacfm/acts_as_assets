@@ -7,7 +7,7 @@
     </li>
 <% else %>
     <li>
-        <%= link_to(File.basename(asset.asset.path), "#{asset.asset.url}") %>
+        <%= link_to(File.basename(asset.asset.path), asset.asset.url, {title: asset.asset_file_name}) %>
         <%= destroy_link(asset, model) unless read_only %>
     </li>
 <% end %>
