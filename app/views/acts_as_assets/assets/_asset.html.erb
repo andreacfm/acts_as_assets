@@ -1,13 +1,13 @@
 <% if asset.displayable? %>
     <li>
         <%= link_to("#{asset.asset.url(:original)}",
-                    :class => "zoom", :rel => "immagine_sito") {image_tag("#{asset.asset.url(:thumb)}", :alt => 'Apri Immagine')}%>
+                    :class => "zoom", :rel => "gallery") {image_tag("#{asset.asset.url(:thumb)}", :alt => 'Apri Immagine')}%>
         <div><%= File.basename(asset.asset.path) %></div>
         <%= destroy_link(asset, model) unless read_only %>
     </li>
 <% else %>
     <li>
-        <%= link_to(File.basename(asset.asset.path), asset.asset.url, {title: asset.asset_file_name}) %>
+        <%= link_to(File.basename(asset.asset.path), asset.asset.url, {title: asset.asset_file_name, class: 'acts_as_assets_link', 'data-content-type' => asset.asset_content_type }) %>
         <%= destroy_link(asset, model) unless read_only %>
     </li>
 <% end %>
