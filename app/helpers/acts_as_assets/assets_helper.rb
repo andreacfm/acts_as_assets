@@ -1,7 +1,7 @@
 module ActsAsAssets::AssetsHelper
   def destroy_link(asset, model)
-      link_to(I18n.translate('destroy'), destroy_file_path(asset, model), {method: :delete, data: {:confirm => 'Sei Sicuro?'}, :remote => true})
-    end
+    link_to(I18n.translate('destroy'), destroy_file_path(asset, model), {method: :delete, data: {:confirm => 'Sei Sicuro?'}, title: I18n.translate('destroy'), class: 'acts_as_assets_destroy', :remote => true})
+  end
 
   def destroy_file_path(asset, model)
     destroy_path(asset, model, asset_target(model), @type)
