@@ -1,1 +1,2 @@
 $("#<%= asset_id(@model) %>").html("<%= assets_body %>");
+$(window).trigger('acts_as_assets:afterDestroy');
